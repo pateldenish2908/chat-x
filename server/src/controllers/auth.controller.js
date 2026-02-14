@@ -25,22 +25,13 @@ exports.login = async (req, res) => {
     const payload = { id: user._id, role: user.role };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
-    // Set HttpOnly Cookie
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 15 * 60 * 1000, // 15 minutes
-    });
 
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    res.json({
+      message: 'Login successful',
+      data: user,
+      accessToken,
+      refreshToken
     });
-
-    res.json({ message: 'Login successful', data: user });
   } catch (err) {
     throw new Error(err.message);
   }
@@ -48,26 +39,15 @@ exports.login = async (req, res) => {
 
 exports.logout = (req, res) => {
   try {
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    });
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    });
-
     res.json({ message: "Logged out successfully" });
   } catch (err) {
     res.status(500).json({ message: "Logout failed", error: err.message });
   }
 };
+
 exports.refreshToken = async (req, res, next) => {
   try {
-    // ✅ Get refreshToken from cookie, not body
-    const refreshToken = req.cookies.refreshToken;
+    const { refreshToken } = req.body;
 
     if (!refreshToken) {
       return res.status(401).json({ message: 'Refresh token is required' });
@@ -79,14 +59,10 @@ exports.refreshToken = async (req, res, next) => {
       role: payload.role,
     });
 
-    res.cookie('accessToken', newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 15 * 60 * 1000, // 15 minutes
+    res.json({
+      success: true,
+      accessToken: newAccessToken
     });
-
-    res.json({ success: true });
   } catch (err) {
     next(err);
   }

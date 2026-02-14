@@ -11,6 +11,8 @@ export default function LogoutButton() {
     try {
       await logout({}).unwrap();
       localStorage.removeItem("user");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
       router.push("/login");
     } catch (err) {
       console.error("Logout failed:", err);

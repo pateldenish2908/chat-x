@@ -22,6 +22,8 @@ export const metadata: Metadata = {
   },
 };
 
+import AuthGuard from "./components/AuthGuard";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,7 +36,9 @@ export default function RootLayout({
       >
         <StoreProvider>
           <CallProvider>
-            {children}
+            <AuthGuard>
+              {children}
+            </AuthGuard>
           </CallProvider>
         </StoreProvider>
       </body>

@@ -1,16 +1,11 @@
-const { verifyAccessToken } = require('../utils/jwt.util');
-const cookie = require('cookie');
-
 function authMiddleware(req, res, next) {
-  const cookies = req.headers.cookie
-    ? cookie.parse(req.headers.cookie)
-    : {};
+  const authHeader = req.headers.authorization;
 
-  const token = cookies.accessToken;
-
-  if (!token) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Unauthorized - No token found' });
   }
+
+  const token = authHeader.split(' ')[1];
 
   try {
     const user = verifyAccessToken(token);

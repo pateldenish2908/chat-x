@@ -10,9 +10,13 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000/api', // Change if needed
+        url: 'http://localhost:5000/api',
+        description: 'Development server',
       },
-    
+      {
+        url: 'https://chat-x-production.up.railway.app/api',
+        description: 'Production server',
+      },
     ],
   },
   apis: ['src/routes/*.js'], // Path to your routes files where you write Swagger docs

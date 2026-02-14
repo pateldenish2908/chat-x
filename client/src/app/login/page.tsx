@@ -32,13 +32,19 @@ export default function LoginPage() {
   const onSubmit = async (values: z.infer<typeof validationSchema>) => {
     setError(null);
     try {
-      const data = (await login(values).unwrap()) as { data?: unknown };
+      const result = await login(values).unwrap();
 
-      if (data && data.data) {
-        localStorage.setItem("user", JSON.stringify(data.data));
+      if (result && result.data) {
+        localStorage.setItem("user", JSON.stringify(result.data));
+      }
+      if (result && result.accessToken) {
+        localStorage.setItem("accessToken", result.accessToken);
+      }
+      if (result && result.refreshToken) {
+        localStorage.setItem("refreshToken", result.refreshToken);
       }
 
-      console.log("Login success:", data);
+      console.log("Login success:", result);
       router.push("/explore");
     } catch (err) {
       console.error("Login failed:", err);
