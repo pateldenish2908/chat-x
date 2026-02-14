@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes/index')
+const config = require('./config/env');
 const app = express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger.config');
@@ -8,10 +9,8 @@ const errorHandler = require('./middlewares/error.middleware');
 
 
 // Middlewares
-const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
-
 app.use(cors({
-  origin: frontendUrl,
+  origin: config.FRONTEND_URL,
   credentials: true, // Allow cookies if you are using them
 }));
 

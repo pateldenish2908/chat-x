@@ -1,5 +1,4 @@
-/* eslint-disable no-undef */
-require('dotenv').config();
+const config = require('./src/config/env');
 const http = require('http');
 const app = require('./src/app');
 const connectDB = require('./src/config/db');
@@ -14,7 +13,7 @@ initSocket(server);
 // Connect to DB and start server
 connectDB();
 
-const PORT = process.env.PORT || 5000;
+const PORT = config.PORT;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT} in ${config.NODE_ENV} mode`);
 });
