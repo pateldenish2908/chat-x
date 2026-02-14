@@ -1,11 +1,12 @@
-// proxy.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
     const accessToken = request.cookies.get('accessToken')?.value;
 
-    const isProtectedPath = request.nextUrl.pathname.startsWith('/chat');
+    const isProtectedPath =
+        request.nextUrl.pathname.startsWith('/chat') ||
+        request.nextUrl.pathname.startsWith('/explore');
 
     if (isProtectedPath && !accessToken) {
         return NextResponse.redirect(new URL('/login', request.url));
@@ -15,5 +16,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/chat/:path*'], // Add more paths as needed
+    matcher: ['/chat/:path*', '/explore/:path*'],
 };
