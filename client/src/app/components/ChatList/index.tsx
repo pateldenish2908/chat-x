@@ -33,7 +33,7 @@ export default function ChatList() {
   return (
     <div className="w-full h-full border-r border-[#2d3139] bg-[#0f1115] flex flex-col shadow-2xl">
       {/* Header */}
-      <div className="p-6 border-b border-[#2d3139]">
+      <div className="p-4 sm:p-6 border-b border-[#2d3139]">
         <ChatHeader />
       </div>
 
@@ -57,13 +57,13 @@ export default function ChatList() {
                 <Link href={`/chat/${room._id}`}>
                   <div className="group p-5 rounded-[1.5rem] bg-[#1a1d23]/40 hover:bg-[#1a1d23] transition-all duration-300 cursor-pointer border border-[#2d3139]/50 hover:border-indigo-500/30 relative overflow-hidden shadow-sm hover:shadow-indigo-500/5">
                     <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-center rounded-r-full" />
-                    <div className="flex items-center gap-5">
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 text-white flex items-center justify-center font-black text-lg shadow-lg shadow-indigo-500/20 ring-2 ring-[#0f1115]">
+                    <div className="flex items-center gap-3 sm:gap-5">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 text-white flex items-center justify-center font-black text-base sm:text-lg shadow-lg shadow-indigo-500/20 ring-2 ring-[#0f1115]">
                         {room.participants[0]?.name?.[0]?.toUpperCase() || "U"}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-baseline mb-1">
-                          <h3 className="font-bold text-slate-100 truncate group-hover:text-indigo-400 transition-colors">
+                          <h3 className="font-bold text-slate-100 text-sm sm:text-base truncate group-hover:text-indigo-400 transition-colors">
                             {room.participants[0]?.name}
                           </h3>
                           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
@@ -84,12 +84,12 @@ export default function ChatList() {
       </div>
 
       {/* Explore Users Button */}
-      <div className="p-6 border-t border-[#2d3139] bg-[#0f1115]">
+      <div className="p-4 sm:p-6 border-t border-[#2d3139] bg-[#0f1115]">
         <Link
           href="/explore"
-          className="flex items-center justify-center gap-3 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl transition-all duration-300 font-black shadow-xl shadow-indigo-900/40 group active:scale-[0.97] uppercase tracking-widest text-xs"
+          className="flex items-center justify-center gap-3 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all duration-300 font-black shadow-xl shadow-indigo-900/40 group active:scale-[0.97] uppercase tracking-widest text-[10px] sm:text-xs"
         >
-          <span className="text-xl group-hover:rotate-180 transition-transform duration-500">＋</span>
+          <span className="text-lg sm:text-xl group-hover:rotate-180 transition-transform duration-500">＋</span>
           Discover People
         </Link>
       </div>

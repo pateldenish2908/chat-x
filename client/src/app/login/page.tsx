@@ -59,7 +59,7 @@ export default function LoginPage() {
       <div className="absolute bottom-0 left-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-purple-600/10 rounded-full blur-[80px] sm:blur-[120px] -ml-24 -mb-24 sm:-ml-48 sm:-mb-48"></div>
 
       <form
-        className="bg-[#1a1d23] p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl w-full max-w-sm sm:max-w-md flex flex-col gap-6 border border-[#2d3139] relative z-10"
+        className="bg-[#1a1d23] p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl w-full max-w-[calc(100vw-2rem)] sm:max-w-md flex flex-col gap-6 border border-[#2d3139] relative z-10 mx-auto"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="text-center mb-4">

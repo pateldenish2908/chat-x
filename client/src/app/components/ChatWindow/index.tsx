@@ -130,7 +130,7 @@ export default function ChatWindow({ roomId, user }: Props) {
       />
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar bg-transparent">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 custom-scrollbar bg-transparent">
         {isLoading ? (
           <div className="flex h-full items-center justify-center space-x-3">
             <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" />
@@ -138,11 +138,11 @@ export default function ChatWindow({ roomId, user }: Props) {
             <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.4s]" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-slate-500 bg-[#1a1d23]/30 rounded-[3rem] border-2 border-dashed border-[#2d3139] m-6">
-            <div className="text-center">
-              <div className="text-5xl mb-6 grayscale opacity-50">🛰️</div>
-              <div className="text-xl font-black text-slate-400 uppercase tracking-widest">Encrypted Direct Line</div>
-              <p className="text-sm font-medium mt-2">Send a pulse to start communication</p>
+          <div className="flex h-full items-center justify-center text-slate-500 bg-[#1a1d23]/30 rounded-[2rem] sm:rounded-[3rem] border-2 border-dashed border-[#2d3139] m-4 sm:m-6">
+            <div className="text-center p-6">
+              <div className="text-4xl sm:text-5xl mb-4 sm:mb-6 grayscale opacity-50">🛰️</div>
+              <div className="text-lg sm:text-xl font-black text-slate-400 uppercase tracking-widest">Encrypted Direct Line</div>
+              <p className="text-xs sm:text-sm font-medium mt-2">Send a pulse to start communication</p>
             </div>
           </div>
         ) : (

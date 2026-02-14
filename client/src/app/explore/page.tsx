@@ -79,27 +79,27 @@ const NearbyUsers = () => {
   return (
     <div className="min-h-screen bg-[#0f1115] p-8 text-slate-100 relative overflow-hidden">
       {/* Decorative blurs */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-[150px] -mr-64 -mt-64"></div>
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-600/5 rounded-full blur-[150px] -ml-64 -mb-64"></div>
+      <div className="absolute top-0 right-0 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-indigo-600/5 rounded-full blur-[100px] sm:blur-[150px] -mr-32 -mt-32 sm:-mr-64 sm:-mt-64"></div>
+      <div className="absolute bottom-0 left-0 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-purple-600/5 rounded-full blur-[100px] sm:blur-[150px] -ml-32 -mb-32 sm:-ml-64 sm:-mb-64"></div>
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6 relative z-10">
-        <div>
-          <h1 className="text-5xl font-black tracking-tighter uppercase italic leading-none">Nearby Nodes</h1>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-10 md:mb-12 gap-6 relative z-10">
+        <div className="text-center md:text-left">
+          <h1 className="text-4xl sm:text-5xl font-black tracking-tighter uppercase italic leading-none">Nearby Nodes</h1>
           <p className="text-indigo-500 font-black uppercase tracking-[0.4em] text-[10px] mt-3 px-1">Synchronizing Proximal Links</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-4 w-full md:w-auto">
           <button
             onClick={() => { getLocation(); refetch(); }}
-            className="flex items-center gap-3 bg-[#1a1d23] border border-[#2d3139] text-slate-300 font-black uppercase tracking-widest text-[10px] px-6 py-4 rounded-2xl shadow-xl hover:bg-[#2d3139] hover:text-white transition-all duration-300 active:scale-95"
+            className="flex-1 md:flex-none items-center justify-center gap-3 bg-[#1a1d23] border border-[#2d3139] text-slate-300 font-black uppercase tracking-widest text-[8px] sm:text-[10px] px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-xl hover:bg-[#2d3139] hover:text-white transition-all duration-300 active:scale-95"
           >
             Scan Area
           </button>
           <button
             onClick={goToChatList}
-            className="flex items-center gap-3 bg-[#1a1d23] border border-[#2d3139] text-slate-300 font-black uppercase tracking-widest text-[10px] px-8 py-4 rounded-2xl shadow-xl hover:bg-[#2d3139] hover:text-white transition-all duration-300 active:scale-95 group"
+            className="flex-1 md:flex-none items-center justify-center gap-3 bg-[#1a1d23] border border-[#2d3139] text-slate-300 font-black uppercase tracking-widest text-[8px] sm:text-[10px] px-6 sm:px-8 py-3 sm:py-4 rounded-2xl shadow-xl hover:bg-[#2d3139] hover:text-white transition-all duration-300 active:scale-95 group"
           >
-            <span className="text-lg group-hover:-translate-x-1 transition-transform">←</span>
+            <span className="text-base sm:text-lg group-hover:-translate-x-1 transition-transform">←</span>
             Active Channels
           </button>
         </div>
@@ -139,11 +139,10 @@ const NearbyUsers = () => {
             }) => (
               <div
                 key={user._id}
-                className="group bg-[#1a1d23]/80 backdrop-blur-md border border-[#2d3139] rounded-[2.5rem] p-8 flex flex-col items-center hover:border-indigo-500/30 transition-all duration-500 shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-2 relative overflow-hidden"
+                className="group bg-[#1a1d23]/80 backdrop-blur-md border border-[#2d3139] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 flex flex-col items-center hover:border-indigo-500/30 transition-all duration-500 shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-2 relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl -mr-12 -mt-12 group-hover:bg-indigo-500/10 transition-all"></div>
-
-                <div className="relative w-36 h-36 rounded-3xl overflow-hidden mb-8 ring-4 ring-[#0f1115] shadow-2xl transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
+                <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-2xl sm:rounded-3xl overflow-hidden mb-6 sm:mb-8 ring-4 ring-[#0f1115] shadow-2xl transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
                   <Image
                     src={user.avatar}
                     alt={user.name}

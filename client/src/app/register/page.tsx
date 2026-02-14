@@ -99,7 +99,7 @@ export default function RegisterPage() {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-[#1a1d23] p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl w-full max-w-lg flex flex-col gap-5 sm:gap-6 border border-[#2d3139] relative z-10"
+        className="bg-[#1a1d23] p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl w-full max-w-[calc(100vw-2rem)] sm:max-w-lg flex flex-col gap-5 sm:gap-6 border border-[#2d3139] relative z-10 mx-auto my-8 sm:my-0"
       >
         <div className="text-center">
           <h1 className="text-3xl sm:text-4xl font-black text-slate-100 tracking-tighter uppercase italic">
