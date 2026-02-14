@@ -19,7 +19,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ roomId, onAudioCall, onVideoCal
                     <p className="text-[10px] text-slate-500 font-bold font-mono tracking-widest">{roomId}</p>
                 </div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
                 <button
                     onClick={onAudioCall}
                     className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-[#1a1d23] hover:bg-[#2d3139] text-slate-400 hover:text-indigo-400 transition-all duration-300 active:scale-90 border border-[#2d3139]"
@@ -34,7 +34,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ roomId, onAudioCall, onVideoCal
                     <span className="text-lg sm:text-xl group-hover:animate-pulse">📹</span>
                     <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest">Call</span>
                 </button>
-                <div className="hidden xs:block w-px h-8 bg-[#2d3139] mx-1 sm:mx-2" />
+                <div className="w-px h-8 bg-[#2d3139] mx-1 sm:mx-2" />
                 <Link href="/chat">
                     <span className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl text-slate-500 hover:bg-red-500/10 hover:text-red-500 transition-all cursor-pointer border border-transparent hover:border-red-500/20">
                         ✖

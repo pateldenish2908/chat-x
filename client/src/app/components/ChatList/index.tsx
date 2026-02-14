@@ -83,8 +83,8 @@ export default function ChatList() {
         )}
       </div>
 
-      {/* Explore Users Button */}
-      <div className="p-4 sm:p-6 border-t border-[#2d3139] bg-[#0f1115]">
+      {/* Explore Users Button - Sticky Bottom */}
+      <div className="p-4 sm:p-6 border-t border-[#2d3139] bg-[#0f1115] sticky bottom-0 z-20">
         <Link
           href="/explore"
           className="flex items-center justify-center gap-3 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all duration-300 font-black shadow-xl shadow-indigo-900/40 group active:scale-[0.97] uppercase tracking-widest text-[10px] sm:text-xs"
