@@ -1,6 +1,5 @@
 let io;
 const { Server } = require('socket.io');
-const cookie = require('cookie');
 const { verifyAccessToken } = require('../utils/jwt.util');
 
 const SocketEvents = require('../constants/socketEvents');
@@ -14,16 +13,11 @@ function initSocket(server) {
     cors: {
       origin: config.FRONTEND_URL,
       methods: ['GET', 'POST'],
-      credentials: true,
     },
   });
 
   io.use((socket, next) => {
-    const rawCookie = socket.handshake.headers.cookie;
-    if (!rawCookie) return next(new Error('No cookies found'));
-
-    const parsed = cookie.parse(rawCookie);
-    const token = parsed.accessToken;
+    const token = socket.handshake.auth.token;
     if (!token) return next(new Error('Token not found'));
 
     try {

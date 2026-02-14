@@ -1,3 +1,5 @@
+const { verifyAccessToken } = require('../utils/jwt.util');
+
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
 

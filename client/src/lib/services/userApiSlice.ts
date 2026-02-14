@@ -55,7 +55,6 @@ export const userApiSlice = createApi({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
-        credentials: "include",
       }),
     }),
 

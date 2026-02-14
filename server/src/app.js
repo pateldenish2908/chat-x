@@ -11,7 +11,6 @@ const errorHandler = require('./middlewares/error.middleware');
 // Middlewares
 app.use(cors({
   origin: config.FRONTEND_URL,
-  credentials: true, // Allow cookies if you are using them
 }));
 
 app.use(express.json());
