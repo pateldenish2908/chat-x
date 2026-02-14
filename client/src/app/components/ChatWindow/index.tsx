@@ -122,7 +122,7 @@ export default function ChatWindow({ roomId, user }: Props) {
   ), [messages, user._id]);
 
   return (
-    <div className="flex flex-col h-full bg-[#0f1115] shadow-2xl overflow-hidden w-full transition-all duration-500">
+    <div className="flex flex-col h-full bg-[#0f1115] overflow-hidden w-full transition-all duration-500">
       <ChatHeader
         roomId={roomId}
         onAudioCall={() => handleCall('audio')}

@@ -33,12 +33,12 @@ export default function ChatList() {
   return (
     <div className="w-full h-full border-r border-[#2d3139] bg-[#0f1115] flex flex-col shadow-2xl">
       {/* Header */}
-      <div className="p-4 sm:p-6 border-b border-[#2d3139]">
+      <div className="p-3 sm:p-6 border-b border-[#2d3139]">
         <ChatHeader />
       </div>
 
       {/* Chat Rooms List */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-4 custom-scrollbar">
         {isLoading ? (
           <div className="h-full flex flex-col items-center justify-center space-y-4">
             <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
@@ -55,7 +55,7 @@ export default function ChatList() {
             {rooms.map((room: ChatRoom) => (
               <li key={room._id}>
                 <Link href={`/chat/${room._id}`}>
-                  <div className="group p-5 rounded-[1.5rem] bg-[#1a1d23]/40 hover:bg-[#1a1d23] transition-all duration-300 cursor-pointer border border-[#2d3139]/50 hover:border-indigo-500/30 relative overflow-hidden shadow-sm hover:shadow-indigo-500/5">
+                  <div className="group p-4 sm:p-5 rounded-[1.25rem] sm:rounded-[1.5rem] bg-[#1a1d23]/40 hover:bg-[#1a1d23] transition-all duration-300 cursor-pointer border border-[#2d3139]/50 hover:border-indigo-500/30 relative overflow-hidden shadow-sm hover:shadow-indigo-500/5">
                     <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-center rounded-r-full" />
                     <div className="flex items-center gap-3 sm:gap-5">
                       <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 text-white flex items-center justify-center font-black text-base sm:text-lg shadow-lg shadow-indigo-500/20 ring-2 ring-[#0f1115]">

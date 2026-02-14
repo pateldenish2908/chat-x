@@ -9,17 +9,17 @@ interface ChatHeaderProps {
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ roomId, onAudioCall, onVideoCall }) => {
     return (
-        <div className="px-6 py-5 bg-[#0f1115] border-b border-[#2d3139] flex justify-between items-center z-10 backdrop-blur-xl bg-opacity-90">
-            <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-500 to-indigo-600 flex items-center justify-center text-white font-black shadow-lg shadow-indigo-500/20">
+        <div className="px-3 sm:px-6 py-4 sm:py-5 bg-[#0f1115] border-b border-[#2d3139] flex justify-between items-center z-10 backdrop-blur-xl bg-opacity-90 transition-all">
+            <div className="flex items-center gap-2 sm:gap-4 overflow-hidden max-w-[50%] xs:max-w-[60%] sm:max-w-none">
+                <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-indigo-500 to-indigo-600 flex items-center justify-center text-white font-black shadow-lg shadow-indigo-500/20">
                     #
                 </div>
-                <div>
-                    <h2 className="font-black text-slate-100 leading-tight tracking-tight uppercase text-sm">Synchronized Room</h2>
-                    <p className="text-[10px] text-slate-500 font-bold font-mono tracking-widest">{roomId}</p>
+                <div className="min-w-0 flex-1">
+                    <h2 className="font-black text-slate-100 leading-tight tracking-tight uppercase text-[10px] sm:text-xs truncate">Synchronized Room</h2>
+                    <p className="text-[9px] sm:text-[10px] text-slate-500 font-bold font-mono tracking-widest truncate">{roomId}</p>
                 </div>
             </div>
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex-shrink-0 flex items-center gap-2 sm:gap-4 ml-2">
                 <button
                     onClick={onAudioCall}
                     className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-[#1a1d23] hover:bg-[#2d3139] text-slate-400 hover:text-indigo-400 transition-all duration-300 active:scale-90 border border-[#2d3139]"
@@ -29,10 +29,10 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ roomId, onAudioCall, onVideoCal
                 </button>
                 <button
                     onClick={onVideoCall}
-                    className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl shadow-indigo-900/40 transition-all duration-300 active:scale-95 border border-indigo-500/20 group"
+                    className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl shadow-indigo-900/40 transition-all duration-300 active:scale-95 border border-indigo-500/20 group"
+                    title="Encrypted Video Call"
                 >
                     <span className="text-lg sm:text-xl group-hover:animate-pulse">📹</span>
-                    <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest">Call</span>
                 </button>
                 <div className="w-px h-8 bg-[#2d3139] mx-1 sm:mx-2" />
                 <Link href="/chat">

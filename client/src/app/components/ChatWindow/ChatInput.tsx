@@ -27,10 +27,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onTyping }) => {
     };
 
     return (
-        <div className="p-4 sm:p-6 bg-[#0f1115] border-t border-[#2d3139]">
-            <div className="max-w-5xl mx-auto flex items-center gap-2 sm:gap-4 bg-[#1a1d23] p-1.5 sm:p-2 rounded-[1.5rem] sm:rounded-[2rem] border border-[#2d3139] group focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-500/10 transition-all duration-500 shadow-inner">
+        <div className="p-3 sm:p-6 bg-[#0f1115] border-t border-[#2d3139]">
+            <div className="max-w-5xl mx-auto flex items-center gap-2 sm:gap-4 bg-[#1a1d23] p-1.5 sm:p-2 rounded-[1.25rem] sm:rounded-[2rem] border border-[#2d3139] group focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-500/10 transition-all duration-500 shadow-inner">
                 <input
-                    className="flex-1 bg-transparent px-4 sm:px-6 py-2.5 sm:py-3 focus:outline-none text-slate-100 placeholder-slate-600 text-[13px] sm:text-sm font-medium"
+                    className="flex-1 bg-transparent px-3 sm:px-6 py-2.5 sm:py-3 focus:outline-none text-slate-100 placeholder-slate-600 text-[13px] sm:text-sm font-medium"
                     value={input}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
