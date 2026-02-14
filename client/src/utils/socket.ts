@@ -1,11 +1,15 @@
 import { io, Socket } from 'socket.io-client';
 
-const URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'http://localhost:5000'; 
+const URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'http://localhost:5000';
 
 export const socket: Socket = io(URL, {
   autoConnect: true,
   transports: ['websocket'],
-  withCredentials: true,
+  auth: (cb: (data: { token: string | null }) => void) => {
+    cb({
+      token: localStorage.getItem('accessToken'),
+    });
+  },
 });
 
 // Socket message types you can strongly type like:
