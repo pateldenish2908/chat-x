@@ -8,24 +8,8 @@ const errorHandler = require('./middlewares/error.middleware');
 
 
 // Middlewares
-<<<<<<< HEAD
-// Allow requests from your frontend (Next.js)
-// app.use(cors({
-//   origin: 'http://localhost:3000',  // <-- your frontend URL
-//   credentials: true   // <-- if you're using cookies, sessions, auth headers
-// }));
-
-// app.use(cors({
-//   origin: "*",
-//   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-// }));
-
-app.use(cors({
-  origin: "*",
-=======
 app.use(cors({
   origin: "http://localhost:3000",
->>>>>>> main
   credentials: true, // Allow cookies if you are using them
 }));
 

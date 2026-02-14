@@ -1,10 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-<<<<<<< HEAD
-=======
   productionBrowserSourceMaps: false,
->>>>>>> main
   reactStrictMode: true,
   images: {
     remotePatterns: [

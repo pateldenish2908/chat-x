@@ -2,14 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useLoginMutation } from "@/lib/services/userApiSlice";
-<<<<<<< HEAD
-import { useFormik } from "formik";
-import * as Yup from "yup";
-=======
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
->>>>>>> main
 import { useState } from "react";
 
 export default function LoginPage() {
@@ -17,101 +12,6 @@ export default function LoginPage() {
   const [login, { isLoading }] = useLoginMutation();
   const [error, setError] = useState<string | null>(null);
 
-<<<<<<< HEAD
-  const formik = useFormik({
-    initialValues: {
-      email: "user1@example.com",
-      password: "password123",
-    },
-    validationSchema: Yup.object({
-      email: Yup.string().email("Invalid email address").required("Required"),
-      password: Yup.string().min(6, "Minimum 6 characters").required("Required"),
-    }),
-    onSubmit: async (values) => {
-      setError(null);
-      try {
-        const data = (await login(values).unwrap()) as { data?: unknown };
-
-        if (data && data.data) {
-          localStorage.setItem("user", JSON.stringify(data.data));
-        }
-
-        console.log("Login success:", data);
-        router.push("/explore");
-      } catch (err) {
-        console.error("Login failed:", err);
-        setError("Login failed. Please try again.");
-      }
-    },
-  });
-
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-600 p-4">
-      <form
-        className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm flex flex-col gap-4"
-        onSubmit={formik.handleSubmit}
-      >
-        <h1 className="text-3xl font-bold text-center text-blue-600">
-          Welcome Back
-        </h1>
-        <p className="text-center text-gray-500 mb-2">
-          Please login to your account
-        </p>
-
-        {error && <div className="text-red-500 text-sm text-center">{error}</div>}
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${
-            formik.touched.email && formik.errors.email
-              ? "border-red-500 focus:ring-red-400"
-              : "border-gray-300 focus:ring-blue-500"
-          } text-gray-800 placeholder-gray-400`}
-          value={formik.values.email}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          required
-        />
-        {formik.touched.email && formik.errors.email && (
-          <div className="text-red-500 text-sm">{formik.errors.email}</div>
-        )}
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${
-            formik.touched.password && formik.errors.password
-              ? "border-red-500 focus:ring-red-400"
-              : "border-gray-300 focus:ring-blue-500"
-          } text-gray-800 placeholder-gray-400`}
-          value={formik.values.password}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          required
-        />
-        {formik.touched.password && formik.errors.password && (
-          <div className="text-red-500 text-sm">{formik.errors.password}</div>
-        )}
-
-        <button
-          type="submit"
-          className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white py-3 rounded-lg font-semibold shadow-md hover:opacity-90 transition disabled:opacity-50"
-          disabled={isLoading}
-        >
-          {isLoading ? "Logging in..." : "Login"}
-        </button>
-
-        <p className="text-center text-sm text-gray-500 mt-2">
-          Don`t have an account?{" "}
-          <span
-            className="text-blue-600 hover:underline cursor-pointer"
-            onClick={() => router.push("/register")}
-          >
-            Sign up
-=======
   const validationSchema = z.object({
     email: z.string().email("Invalid email address").min(1, "Required"),
     password: z.string().min(6, "Minimum 6 characters").min(1, "Required"),
@@ -221,7 +121,6 @@ export default function LoginPage() {
             onClick={() => router.push("/register")}
           >
             Request Invite
->>>>>>> main
           </span>
         </p>
       </form>

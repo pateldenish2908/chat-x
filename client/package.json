@@ -9,20 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
-=======
     "@hookform/resolvers": "^5.2.2",
->>>>>>> main
     "@reduxjs/toolkit": "^2.8.2",
     "formik": "^2.4.6",
     "framer-motion": "^12.18.1",
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-<<<<<<< HEAD
-=======
     "react-hook-form": "^7.71.1",
->>>>>>> main
     "react-redux": "^9.2.0",
     "socket.io-client": "^4.8.1",
     "yup": "^1.6.1",

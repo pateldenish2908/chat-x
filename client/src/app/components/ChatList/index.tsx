@@ -6,10 +6,7 @@ import { getCurrentUser } from "@/utils/getCurrentUser";
 import { useGetChatRoomsQuery } from "@/lib/services/chatApiSlice";
 import { ChatRoom } from "@/types";
 import { socket } from "@/utils/socket";
-<<<<<<< HEAD
-=======
 import { SocketEvents } from "@/constants/socketEvents";
->>>>>>> main
 import ChatHeader from "./ChatHeader";
 
 const user = getCurrentUser();
@@ -24,65 +21,11 @@ export default function ChatList() {
   });
 
   useEffect(() => {
-<<<<<<< HEAD
-    socket.on("chatListUpdated", () => {
-      console.log("Chat list updated, refetching...");
-=======
     socket.on(SocketEvents.CHAT_LIST_UPDATED, () => {
->>>>>>> main
       refetch();
     });
 
     return () => {
-<<<<<<< HEAD
-      socket.off("chatListUpdated");
-    };
-  }, []);
-
-  return (
-    <div className="w-full sm:w-80 border-r p-4 bg-white shadow-lg h-full flex flex-col">
-      {/* Header */}
-      <ChatHeader />
-
-      {/* Chat Rooms List */}
-      {isLoading ? (
-        <div className="flex-1 flex items-center justify-center text-gray-500">
-          Loading...
-        </div>
-      ) : rooms.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-gray-400 text-center">
-          <div>
-            <p className="text-lg font-medium mb-2">No chat rooms available</p>
-            <p className="text-sm">Start a conversation to see it here.</p>
-          </div>
-        </div>
-      ) : (
-        <ul className="space-y-3 flex-1 overflow-y-auto mb-4">
-          {rooms.map((room: ChatRoom) => (
-            <li key={room._id}>
-              <Link href={`/chat/${room._id}`}>
-                <div className="p-4 bg-gray-100 hover:bg-blue-100 hover:text-blue-700 transition rounded-lg cursor-pointer shadow-sm">
-                  <div className="font-semibold truncate text-gray-700">
-                    {room.participants[0]?.name}
-                  </div>
-                  <div className="truncate text-sm text-gray-500">
-                    {new Date(room.createdAt).toLocaleString()}
-                  </div>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {/* Explore Users Button */}
-      <Link
-        href="/explore"
-        className="mt-4 text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition font-medium shadow block"
-      >
-        + Explore Users
-      </Link>
-=======
       socket.off(SocketEvents.CHAT_LIST_UPDATED);
     };
   }, [refetch]);
@@ -150,7 +93,6 @@ export default function ChatList() {
           Discover People
         </Link>
       </div>
->>>>>>> main
     </div>
   );
 }
