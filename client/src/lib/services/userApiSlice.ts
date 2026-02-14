@@ -9,7 +9,7 @@ interface LoginRequest {
 interface LoginResponse {
   accessToken: string;
   refreshToken: string;
-  user: {
+  data: {
     _id: string;
     name: string;
     email: string;
