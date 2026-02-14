@@ -77,7 +77,7 @@ export default function ChatWindow({ roomId, user }: Props) {
       const audio = new Audio("https://codeskulptor-demos.commondatastorage.googleapis.com/pang/pop.mp3");
       audio.volume = 0.4;
       audio.play().catch(() => { });
-    } catch (e) { }
+    } catch { }
   };
 
   const handleTyping = useCallback((typing: boolean) => {

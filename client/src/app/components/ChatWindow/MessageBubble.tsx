@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Message, User } from "@/types";
+import { Message } from "@/types";
 
 interface MessageBubbleProps {
     message: Message;

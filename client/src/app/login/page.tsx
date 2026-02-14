@@ -29,7 +29,7 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof validationSchema>) => {
     setError(null);
     try {
       const data = (await login(values).unwrap()) as { data?: unknown };

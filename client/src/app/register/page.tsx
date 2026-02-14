@@ -15,8 +15,8 @@ export default function RegisterPage() {
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email").min(1, "Email is required"),
     password: z.string().min(6, "Password must be at least 6 characters").min(1, "Password is required"),
-    gender: z.enum(["male", "female", "other"], { required_error: "Gender is required" }),
-    lookingFor: z.enum(["male", "female", "both"], { required_error: "Looking For is required" }),
+    gender: z.enum(["male", "female", "other"]),
+    lookingFor: z.enum(["male", "female", "both"]),
     birthday: z.string().min(1, "Birthday is required"),
     location: z.object({
       type: z.literal("Point"),
@@ -35,8 +35,8 @@ export default function RegisterPage() {
       name: "",
       email: "",
       password: "",
-      gender: "male",
-      lookingFor: "female",
+      gender: "male" as const,
+      lookingFor: "female" as const,
       birthday: "",
       location: {
         type: "Point",
@@ -64,7 +64,7 @@ export default function RegisterPage() {
     }
   }, [setValue]);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof validationSchema>) => {
     try {
       const payload = {
         ...values,

@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 import { getCurrentUser } from "@/utils/getCurrentUser";
 import Image from "next/image";

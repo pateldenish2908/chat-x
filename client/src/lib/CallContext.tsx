@@ -50,6 +50,7 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [receivingCall, setReceivingCall] = useState(false);
     const [caller, setCaller] = useState("");
     const [callerUser, setCallerUser] = useState<User | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [callerSignal, setCallerSignal] = useState<any>(null);
     const [callEnded, setCallEnded] = useState(false);
     const [callType, setCallType] = useState<'video' | 'audio'>('video');
@@ -77,6 +78,7 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const playRingtone = useCallback(() => {
         try {
             if (!audioContext.current) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 audioContext.current = new (window.AudioContext || (window as any).webkitAudioContext)();
             }
             const ctx = audioContext.current;
@@ -170,6 +172,7 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Socket Event Handlers
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleCallMade = async (data: any) => {
             setCallEnded(false); // Reset callEnded state for new incoming call
             setReceivingCall(true);
@@ -181,6 +184,7 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
             playRingtone();
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleAnswerMade = async (data: any) => {
             stopRingtone();
             setCallAccepted(true);
@@ -195,6 +199,7 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleIceCandidate = async (data: any) => {
             try {
                 const candidate = new RTCIceCandidate(data.candidate);
@@ -407,7 +412,7 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
             alert("Could not access camera/microphone. Please check permissions.");
             cleanupCall();
         }
-    }, [createPeerConnection, currentUser, cleanupCall, selectedMicrophone, getDevices]);
+    }, [createPeerConnection, currentUser, cleanupCall, selectedMicrophone, selectedCamera, getDevices]);
 
     const answerCall = useCallback(async () => {
         stopRingtone();
@@ -441,7 +446,7 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
             alert("Could not access camera/microphone. Please check permissions.");
             cleanupCall();
         }
-    }, [callType, caller, callerSignal, createPeerConnection, processCandidateQueue, stopRingtone, cleanupCall, selectedMicrophone, getDevices]);
+    }, [callType, caller, callerSignal, createPeerConnection, processCandidateQueue, stopRingtone, cleanupCall, selectedMicrophone, selectedCamera, getDevices]);
 
     const endCall = useCallback(() => {
         const target = caller || callPeerId;
