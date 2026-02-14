@@ -1,1 +1,1 @@
-# ChatX
+# ChatApp

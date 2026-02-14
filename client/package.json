@@ -1,0 +1,44 @@
+{
+  "name": "tinder-chat-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+<<<<<<< HEAD
+=======
+    "@hookform/resolvers": "^5.2.2",
+>>>>>>> main
+    "@reduxjs/toolkit": "^2.8.2",
+    "formik": "^2.4.6",
+    "framer-motion": "^12.18.1",
+    "next": "15.3.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+<<<<<<< HEAD
+=======
+    "react-hook-form": "^7.71.1",
+>>>>>>> main
+    "react-redux": "^9.2.0",
+    "socket.io-client": "^4.8.1",
+    "yup": "^1.6.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4.1.10",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.3",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.10",
+    "typescript": "^5"
+  }
+}
