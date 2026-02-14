@@ -8,9 +8,11 @@ const registerChatHandlers = require('../socket/handlers/chat.handler');
 const registerCallHandlers = require('../socket/handlers/call.handler');
 
 function initSocket(server) {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
   io = new Server(server, {
     cors: {
-      origin: 'http://localhost:3000',
+      origin: frontendUrl,
       methods: ['GET', 'POST'],
       credentials: true,
     },

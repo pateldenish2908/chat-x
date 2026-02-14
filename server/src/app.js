@@ -8,8 +8,10 @@ const errorHandler = require('./middlewares/error.middleware');
 
 
 // Middlewares
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: frontendUrl,
   credentials: true, // Allow cookies if you are using them
 }));
 
