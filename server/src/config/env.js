@@ -1,10 +1,14 @@
 const dotenv = require('dotenv');
 const path = require('path');
 
+// Load base .env
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
 const env = process.env.NODE_ENV || 'development';
 const envPath = path.resolve(__dirname, `../../.env.${env}`);
 
-dotenv.config({ path: envPath });
+// Load environment-specific .env (overrides base)
+dotenv.config({ path: envPath, override: true });
 
 module.exports = {
     NODE_ENV: process.env.NODE_ENV,

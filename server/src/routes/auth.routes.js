@@ -123,7 +123,7 @@ router.post('/login', login);
  *       401:
  *         description: Unauthorized
  */
-router.post('/refresh-token', authMiddleware, refreshToken);
+router.post('/refresh-token', refreshToken);
 
 /**
  * @swagger

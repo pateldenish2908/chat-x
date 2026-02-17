@@ -17,13 +17,11 @@ const userSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: true,
       trim: true,
     },
     gender: {
       type: String,
       enum: ['male', 'female', 'other'],
-      required: true,
     },
     lookingFor: {
       type: String,
@@ -32,7 +30,6 @@ const userSchema = new mongoose.Schema(
     },
     birthday: {
       type: Date,
-      required: true,
     },
     bio: {
       type: String,

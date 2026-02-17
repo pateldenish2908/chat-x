@@ -29,12 +29,14 @@ const registerUser = async (body) => {
 };
 
 const loginUser = async (email, password) => {
-  const user = await User.findOne({ email });
-
-  if (!user || user.password !== password) {
+  const user = await User.findOne({ email }).select('+password');
+  const match  =await user.comparePassword(password);
+  if (!user || !match ) {
     throw new Error('Invalid credentials');
   }
 
+  // Remove password from returned user object
+  user.password = undefined;
   return user;
 };
 
@@ -45,8 +47,11 @@ const addUser = async (userData) => {
 
 // Update existing user
 const updateUser = async (id, userData) => {
-  const user = await User.findByIdAndUpdate(id, userData, { new: true });
+  const user = await User.findById(id);
   if (!user) throw new Error('User not found');
+
+  Object.assign(user, userData);
+  await user.save();
   return user;
 };
 
@@ -264,7 +269,7 @@ async function seedUsers() {
     });
   }
   try {
-    await User.insertMany(users);
+    await User.create(users);
     console.log('Users seeded successfully');
     return 'Users seeded successfully';
   } catch (error) {

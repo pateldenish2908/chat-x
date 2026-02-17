@@ -1,3 +1,5 @@
+const userService = require('../services/user.service');
+const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../utils/jwt.util');
 const redisClient = require('../config/redis');
 
 exports.register = async (req, res, next) => {
