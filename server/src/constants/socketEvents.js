@@ -15,6 +15,7 @@ const SocketEvents = Object.freeze({
     USER_ONLINE: 'user_online',
     USER_OFFLINE: 'user_offline',
     AUTHENTICATE: 'authenticate',
+    CHAT_LIST_UPDATED: 'chat_list_updated',
 });
 
 module.exports = SocketEvents;

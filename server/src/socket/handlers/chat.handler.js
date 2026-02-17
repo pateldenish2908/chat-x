@@ -53,6 +53,10 @@ module.exports = (io, socket) => {
             await Message.updateOne({ messageId }, { status: 'delivered' });
             socket.emit(SocketEvents.MESSAGE_DELIVERED, { messageId, status: 'delivered' });
 
+            // 6. Notify both users to update their chat list
+            socket.emit(SocketEvents.CHAT_LIST_UPDATED);
+            io.to(receiverId).emit(SocketEvents.CHAT_LIST_UPDATED);
+
             if (redisClient.isReady) {
                 await redisClient.hset(`message:${messageId}`, 'status', 'delivered');
             }
