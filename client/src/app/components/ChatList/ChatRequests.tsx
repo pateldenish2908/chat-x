@@ -26,17 +26,8 @@ export default function ChatRequests() {
     const pendingRequests = Array.isArray(requests)
         ? requests.filter((r: any) => {
             const isPending = r.status === 'pending';
-            const receiverId = (r.receiver?._id || r.receiver || '').toString();
-            const currentUserId = (user?._id || '').toString();
 
-            const isForMe = isPending && receiverId === currentUserId;
-
-            // Helpful debug log if data exists but not shown
-            if (isPending && !isForMe && requests.length > 0) {
-                console.debug(`Filtered out request ${r._id}: ReceiverID(${receiverId}) vs CurrentUserID(${currentUserId})`);
-            }
-
-            return isForMe;
+            return isPending;
         })
         : [];
 
