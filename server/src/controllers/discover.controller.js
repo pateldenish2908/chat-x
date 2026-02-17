@@ -9,13 +9,18 @@ const getNearbyUsers = async (req, res) => {
             return res.status(400).json({ message: 'Longitude and latitude are required' });
         }
 
-        // Get blocked users to exclude
-        const blockedIds = await Block.find({
+        // 1. Efficiently get all excluded IDs in one query
+        const blocks = await Block.find({
             $or: [{ blocker: req.user.id }, { blocked: req.user.id }],
-        }).distinct('blocked');
+        }).select('blocker blocked').lean();
 
-        const blockedMeIds = await Block.find({ blocked: req.user.id }).distinct('blocker');
-        const excludedIds = [...new Set([...blockedIds, ...blockedMeIds, req.user.id])];
+        const excludedIds = new Set([req.user.id]);
+        blocks.forEach(b => {
+            if (b.blocker) excludedIds.add(b.blocker.toString());
+            if (b.blocked) excludedIds.add(b.blocked.toString());
+        });
+
+        const excludedList = Array.from(excludedIds);
 
         // 1. Try to find nearby users first
         let users = await User.find({
@@ -28,22 +33,24 @@ const getNearbyUsers = async (req, res) => {
                     $maxDistance: parseInt(radius) * 1000, // convert km to meters
                 },
             },
-            _id: { $nin: excludedIds },
+            _id: { $nin: excludedList },
             isActive: true,
         })
             .select('name gender bio profileImage birthday locationEnabled lastSeen')
             .limit(limit * 1)
-            .skip((page - 1) * limit);
+            .skip((page - 1) * limit)
+            .lean();
 
         // 2. Fallback: If no one is nearby, show all active users (for cold-start/testing)
         if (users.length === 0) {
             users = await User.find({
-                _id: { $nin: excludedIds },
+                _id: { $nin: excludedList },
                 isActive: true
             })
                 .select('name gender bio profileImage birthday locationEnabled lastSeen')
                 .limit(limit * 1)
-                .sort('-lastSeen');
+                .sort('-lastSeen')
+                .lean();
         }
 
         res.status(200).json({

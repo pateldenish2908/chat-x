@@ -1,6 +1,6 @@
-// const { default: mongoose } = require('mongoose');
 const { getIO } = require('../config/socket');
 const ChatRoom = require('../models/chatRoom.model');
+const SocketEvents = require('../constants/socketEvents');
 
 exports.findOrCreateChatRoom = async (user1Id, user2Id) => {
   if (!user1Id || !user2Id) {
@@ -18,8 +18,8 @@ exports.findOrCreateChatRoom = async (user1Id, user2Id) => {
       room = await ChatRoom.create({ participants: [user1Id, user2Id] });
 
       const io = getIO();
-      // io.to(user1Id).emit('chatListUpdated');
-      io.to(user2Id).emit('chatListUpdated');
+      io.to(user1Id).emit(SocketEvents.CHAT_LIST_UPDATED);
+      io.to(user2Id).emit(SocketEvents.CHAT_LIST_UPDATED);
     }
     return room;
   } catch (err) {
