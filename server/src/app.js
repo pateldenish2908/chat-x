@@ -3,6 +3,7 @@ const cors = require('cors');
 const routes = require('./routes/index')
 const config = require('./config/env');
 const app = express();
+// app.set('etag', false);
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger.config');
 const errorHandler = require('./middlewares/error.middleware');

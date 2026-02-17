@@ -2,10 +2,11 @@ const Redis = require('ioredis');
 const config = require('./env');
 
 const redisClient = new Redis(config.REDIS_URL, {
-    // retryStrategy: (times) => {
-    //     const delay = Math.min(times * 50, 5000);
-    //     return delay;
-    // },
+    maxRetriesPerRequest: null,
+    retryStrategy: (times) => {
+        // Try to reconnect every 5 seconds if offline
+        return 50000;
+    },
 });
 
 redisClient.isReady = false;
