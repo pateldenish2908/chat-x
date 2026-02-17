@@ -15,9 +15,9 @@ export default function RegisterPage() {
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email").min(1, "Email is required"),
     password: z.string().min(6, "Password must be at least 6 characters").min(1, "Password is required"),
+    age: z.coerce.number().min(18, "Must be at least 18"),
     gender: z.enum(["male", "female", "other"]),
-    lookingFor: z.enum(["male", "female", "both"]),
-    birthday: z.string().min(1, "Birthday is required"),
+    bio: z.string().max(200, "Bio too long").optional(),
     location: z.object({
       type: z.literal("Point"),
       coordinates: z.array(z.number()).length(2),
@@ -35,9 +35,9 @@ export default function RegisterPage() {
       name: "",
       email: "",
       password: "",
+      age: 18,
       gender: "male" as const,
-      lookingFor: "female" as const,
-      birthday: "",
+      bio: "",
       location: {
         type: "Point",
         coordinates: [0, 0],
@@ -68,7 +68,7 @@ export default function RegisterPage() {
     try {
       const payload = {
         ...values,
-        birthday: new Date(values.birthday).toISOString(),
+        profileImage: `https://api.dicebear.com/7.x/avataaars/svg?seed=${values.name}`,
       };
 
       const data = await registerUser(payload).unwrap();
@@ -171,35 +171,32 @@ export default function RegisterPage() {
             )}
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Looking For</label>
-            <select
-              className="w-full px-5 py-3 sm:px-6 sm:py-4 bg-[#0f1115] border border-[#2d3139] rounded-xl sm:rounded-2xl text-slate-100 text-xs sm:text-sm font-medium appearance-none focus:border-indigo-500 transition-all cursor-pointer"
-              {...register("lookingFor")}
-            >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="both">Both</option>
-            </select>
-            {errors.lookingFor && (
-              <div className="text-red-500 text-[10px] font-black uppercase tracking-widest px-2">{errors.lookingFor.message as string}</div>
+          <div className="space-y-1.5 col-span-full">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Bio</label>
+            <textarea
+              placeholder="Tell us about yourself..."
+              className={`w-full px-5 py-3 sm:px-6 sm:py-4 bg-[#0f1115] border rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 ${errors.bio
+                ? "border-red-500/50 focus:ring-red-500/10"
+                : "border-[#2d3139] focus:border-indigo-500 focus:ring-indigo-500/10"
+                } text-slate-100 placeholder-slate-600 text-xs sm:text-sm font-medium h-24 resize-none`}
+              {...register("bio")}
+            />
+            {errors.bio && (
+              <div className="text-red-500 text-[10px] font-black uppercase tracking-widest px-2">{errors.bio.message as string}</div>
             )}
           </div>
-        </div>
 
-        <div className="space-y-1.5">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Birth Date</label>
-          <input
-            type="date"
-            className={`w-full px-5 py-3 sm:px-6 sm:py-4 bg-[#0f1115] border rounded-xl sm:rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 ${errors.birthday
-              ? "border-red-500/50 focus:ring-red-500/10"
-              : "border-[#2d3139] focus:border-indigo-500 focus:ring-indigo-500/10"
-              } text-slate-100 text-xs sm:text-sm font-medium`}
-            {...register("birthday")}
-          />
-          {errors.birthday && (
-            <div className="text-red-500 text-[10px] font-black uppercase tracking-widest px-2">{errors.birthday.message as string}</div>
-          )}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Age</label>
+            <input
+              type="number"
+              className={`w-full px-5 py-3 sm:px-6 sm:py-4 bg-[#0f1115] border border-[#2d3139] rounded-xl sm:rounded-2xl text-slate-100 text-xs sm:text-sm font-medium focus:border-indigo-500 transition-all`}
+              {...register("age")}
+            />
+            {errors.age && (
+              <div className="text-red-500 text-[10px] font-black uppercase tracking-widest px-2">{errors.age.message as string}</div>
+            )}
+          </div>
         </div>
 
         <button

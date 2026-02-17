@@ -8,6 +8,7 @@ import { ChatRoom } from "@/types";
 import { socket } from "@/utils/socket";
 import { SocketEvents } from "@/constants/socketEvents";
 import ChatHeader from "./ChatHeader";
+import ChatRequests from "./ChatRequests";
 
 const user = getCurrentUser();
 
@@ -39,6 +40,7 @@ export default function ChatList() {
 
       {/* Chat Rooms List */}
       <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-4 custom-scrollbar">
+        <ChatRequests />
         {isLoading ? (
           <div className="h-full flex flex-col items-center justify-center space-y-4">
             <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />

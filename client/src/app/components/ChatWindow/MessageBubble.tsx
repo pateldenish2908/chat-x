@@ -7,6 +7,16 @@ interface MessageBubbleProps {
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn }) => {
+    const renderStatus = () => {
+        if (!isOwn) return null;
+        switch (message.status) {
+            case 'sent': return <span className="ml-1 opacity-50 text-[8px]">✓</span>;
+            case 'delivered': return <span className="ml-1 opacity-70 text-[8px]">✓✓</span>;
+            case 'read': return <span className="ml-1 text-indigo-400 text-[8px]">✓✓</span>;
+            default: return null;
+        }
+    };
+
     return (
         <div className={`flex ${isOwn ? "justify-end" : "justify-start"} group fade-in`}>
             <div className={`flex flex-col max-w-[85%] md:max-w-[75%] ${isOwn ? "items-end" : "items-start"}`}>
@@ -15,12 +25,15 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn }) => {
                     : "bg-[#1a1d23] text-slate-200 rounded-tl-none border border-[#2d3139] shadow-black/20"
                     }`}>
                     <div className="whitespace-pre-wrap break-words font-medium">
-                        {message?.message}
+                        {message?.content}
                     </div>
                 </div>
-                <span className="text-[10px] mt-2 text-slate-600 font-black uppercase tracking-widest px-2">
-                    {message.createdAt && new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
+                <div className="flex items-center gap-1 mt-2 px-2">
+                    <span className="text-[10px] text-slate-600 font-black uppercase tracking-widest">
+                        {message.createdAt && new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    {renderStatus()}
+                </div>
             </div>
         </div>
     );

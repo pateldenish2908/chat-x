@@ -6,9 +6,8 @@ export const socket: Socket = io(URL, {
   autoConnect: true,
   transports: ['websocket'],
   auth: (cb: (data: { token: string | null }) => void) => {
-    cb({
-      token: localStorage.getItem('accessToken'),
-    });
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    cb({ token });
   },
 });
 

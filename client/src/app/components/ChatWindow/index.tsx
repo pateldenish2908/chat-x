@@ -1,19 +1,19 @@
-"use client";
-
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { socket } from "@/utils/socket";
 import { Message, User } from "@/types";
-import { useGetMessagesByRoomIdQuery } from "@/lib/services/chatApiSlice";
-import { useCall } from "@/lib/CallContext";
 import { SocketEvents } from "@/constants/socketEvents";
+import { getMessages, saveMessage, updateMessageStatus } from "@/utils/persistence.util";
 import ChatHeader from "./ChatHeader";
 import MessageBubble from "./MessageBubble";
 import ChatInput from "./ChatInput";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
   roomId: string;
   user: User;
 }
+
+import { useGetMessagesQuery } from "@/lib/services/chatApiSlice";
 
 export default function ChatWindow({ roomId, user }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -21,15 +21,23 @@ export default function ChatWindow({ roomId, user }: Props) {
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { callUser } = useCall();
-  const { data: fetchedMessages = [], isLoading } = useGetMessagesByRoomIdQuery(roomId);
+  const { data: dbMessages, isLoading: isFetchingHistory } = useGetMessagesQuery(roomId, {
+    skip: !roomId,
+  });
 
-  // Initialize messages from fetch
+  // Initialize messages from DB and LocalStorage
   useEffect(() => {
-    if (fetchedMessages.length > 0) {
-      setMessages(fetchedMessages);
+    if (dbMessages) {
+      // Merge logic: prefer DB but keep LS if DB is empty/lagging
+      // In this case, we just replace for simplicity as DB is source of truth
+      setMessages(dbMessages);
+      // Update LS to match DB for consistency
+      localStorage.setItem(`messages_${roomId}`, JSON.stringify(dbMessages));
+    } else {
+      const history = getMessages(roomId);
+      setMessages(history);
     }
-  }, [fetchedMessages]);
+  }, [dbMessages, roomId]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -40,33 +48,56 @@ export default function ChatWindow({ roomId, user }: Props) {
   }, [messages, isTyping, scrollToBottom]);
 
   useEffect(() => {
-    socket.emit(SocketEvents.JOIN, { roomId });
+    // Backend uses direct socket emission, but we join room for legacy if needed
+    // socket.emit(SocketEvents.JOIN, { roomId });
 
     const onReceive = (msg: Message) => {
-      if (msg.chatRoom === roomId) {
-        setMessages((prev) => [...prev, msg]);
-        if (msg.sender?._id !== user._id) {
-          playMessageSound();
-          setIsTyping(false);
-        }
+      // In this version, msg comes with messageId, senderId, content
+      setMessages((prev) => {
+        const newMessages = [...prev, msg];
+        saveMessage(roomId, msg);
+        return newMessages;
+      });
+
+      if (typeof msg.sender === 'object' ? msg.sender?._id !== user._id : msg.sender !== user._id) {
+        playMessageSound();
+        setIsTyping(false);
+        // Notify sender that message is read
+        socket.emit(SocketEvents.MESSAGE_READ, {
+          messageId: msg.messageId,
+          senderId: typeof msg.sender === 'object' ? msg.sender?._id : msg.sender
+        });
       }
     };
 
-    const onTypingStarted = (typingUser: User) => {
-      if (typingUser._id !== user._id) setIsTyping(true);
+    const onStatusUpdate = (data: { messageId: string, status: string }) => {
+      setMessages((prev) => {
+        const updated = prev.map(m => m.messageId === data.messageId ? { ...m, status: data.status as any } : m);
+        updateMessageStatus(roomId, data.messageId, data.status);
+        return updated;
+      });
     };
 
-    const onTypingStopped = (typingUser: User) => {
-      if (typingUser._id !== user._id) setIsTyping(false);
+    const onTypingStarted = (data: { senderId: string }) => {
+      if (data.senderId !== user._id) setIsTyping(true);
+    };
+
+    const onTypingStopped = (data: { senderId: string }) => {
+      if (data.senderId !== user._id) setIsTyping(false);
     };
 
     socket.on(SocketEvents.RECEIVE_MESSAGE, onReceive);
+    socket.on(SocketEvents.MESSAGE_SENT, onStatusUpdate);
+    socket.on(SocketEvents.MESSAGE_DELIVERED, onStatusUpdate);
+    socket.on(SocketEvents.MESSAGE_READ, onStatusUpdate);
     socket.on(SocketEvents.TYPING_STARTED, onTypingStarted);
     socket.on(SocketEvents.TYPING_STOPPED, onTypingStopped);
 
     return () => {
-      socket.emit(SocketEvents.LEAVE, { roomId });
       socket.off(SocketEvents.RECEIVE_MESSAGE, onReceive);
+      socket.off(SocketEvents.MESSAGE_SENT, onStatusUpdate);
+      socket.off(SocketEvents.MESSAGE_DELIVERED, onStatusUpdate);
+      socket.off(SocketEvents.MESSAGE_READ, onStatusUpdate);
       socket.off(SocketEvents.TYPING_STARTED, onTypingStarted);
       socket.off(SocketEvents.TYPING_STOPPED, onTypingStopped);
     };
@@ -81,32 +112,38 @@ export default function ChatWindow({ roomId, user }: Props) {
   };
 
   const handleTyping = useCallback((typing: boolean) => {
+    const receiverId = roomId; // Assuming roomId is the other user's ID for 1v1
     if (typing) {
-      socket.emit(SocketEvents.TYPING, { roomId, user });
+      socket.emit(SocketEvents.TYPING_START, { receiverId });
 
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => {
-        socket.emit(SocketEvents.STOP_TYPING, { roomId, user });
+        socket.emit(SocketEvents.TYPING_STOP, { receiverId });
       }, 2000);
-    } else {
-      // Explicit stop typing if needed, though timeout handles most
     }
-  }, [roomId, user]);
-
-  const handleCall = useCallback((type: 'video' | 'audio') => {
-    const otherUserMsg = messages.find(m => m.sender?._id !== user._id);
-    if (otherUserMsg) {
-      callUser(otherUserMsg.sender._id, type);
-    } else {
-      alert("Please send a message first to establish a connection with the participant!");
-    }
-  }, [messages, user._id, callUser]);
+  }, [roomId]);
 
   const sendMessage = useCallback((content: string) => {
     if (!content) return;
-    socket.emit(SocketEvents.SEND_MESSAGE, {
+    const messageId = uuidv4();
+    const receiverId = roomId; // 1v1 mapping
+
+    const tempMsg: Message = {
+      messageId,
       chatRoom: roomId,
-      senderId: user._id,
+      sender: user._id,
+      content,
+      status: 'sent',
+      createdAt: new Date().toISOString(),
+    };
+
+    // Optimistic update
+    setMessages((prev) => [...prev, tempMsg]);
+    saveMessage(roomId, tempMsg);
+
+    socket.emit(SocketEvents.SEND_MESSAGE, {
+      messageId,
+      receiverId,
       content,
     });
   }, [roomId, user._id]);
@@ -114,28 +151,24 @@ export default function ChatWindow({ roomId, user }: Props) {
   const renderedMessages = useMemo(() => (
     messages.map((msg, index) => (
       <MessageBubble
-        key={msg._id || index}
+        key={msg.messageId || index}
         message={msg}
-        isOwn={msg.sender?._id === user._id}
+        isOwn={(typeof msg.sender === 'object' ? msg.sender?._id : msg.sender) === user._id}
       />
     ))
   ), [messages, user._id]);
 
   return (
     <div className="flex flex-col h-full bg-[#0f1115] overflow-hidden w-full transition-all duration-500">
-      <ChatHeader
-        roomId={roomId}
-        onAudioCall={() => handleCall('audio')}
-        onVideoCall={() => handleCall('video')}
-      />
+      <ChatHeader roomId={roomId} />
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 custom-scrollbar bg-transparent">
-        {isLoading ? (
+        {isFetchingHistory ? (
           <div className="flex h-full items-center justify-center space-x-3">
-            <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" />
-            <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.2s]" />
-            <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.4s]" />
+            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:0s]" />
+            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.2s]" />
+            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.4s]" />
           </div>
         ) : messages.length === 0 ? (
           <div className="flex h-full items-center justify-center text-slate-500 bg-[#1a1d23]/30 rounded-[2rem] sm:rounded-[3rem] border-2 border-dashed border-[#2d3139] m-4 sm:m-6">

@@ -29,47 +29,59 @@ interface CreateChatRoomRequest {
 export const chatApiSlice = createApi({
   reducerPath: "chatApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Users", "ChatRooms", "Messages", "NearbyUsers"],
+  tagTypes: ["ChatRooms", "ChatRequests"],
   endpoints: (builder) => ({
-    // 💬 Get all chat rooms for a user
+    // 💬 Get my chat rooms
     getChatRooms: builder.query({
-      query: (userId: string) => `chat-rooms/my-chat-rooms/${userId}`,
-      // providesTags: ["ChatRooms"],
+      query: () => `chat-rooms/my-chat-rooms`,
+      providesTags: ["ChatRooms"],
     }),
 
-    // 💌 Get messages in a room
-    getMessagesByRoomId: builder.query({
-      query: (roomId: string) => `messages/${roomId}`,
-      providesTags: (result, error, roomId) => [
-        { type: "Messages", id: roomId },
-      ],
-    }),
-
-    // 📨 Send a new message
-    sendMessage: builder.mutation({
-      query: (body: SendMessagePayload) => ({
-        url: "messages",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Messages", id: arg.chatRoom },
-      ],
-    }),
     // 🆕 Create or get chat room
     createOrGetChatRoom: builder.mutation<ChatRoom, CreateChatRoomRequest>({
       query: (body) => ({
-        url: "/chat-rooms/create-or-get",
+        url: "chat-rooms/create-or-get",
         method: "POST",
         body,
       }),
+    }),
+
+    // 💌 Chat Requests
+    sendChatRequest: builder.mutation({
+      query: (receiverId: string) => ({
+        url: "chat-requests/send",
+        method: "POST",
+        body: { receiverId },
+      }),
+      invalidatesTags: ["ChatRequests"],
+    }),
+
+    respondToChatRequest: builder.mutation({
+      query: (payload: { requestId: string; status: 'accepted' | 'declined' }) => ({
+        url: "chat-requests/respond",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["ChatRequests", "ChatRooms"],
+    }),
+
+    getMyChatRequests: builder.query({
+      query: () => "chat-requests/my-requests",
+      providesTags: ["ChatRequests"],
+    }),
+    // 📖 Chat History
+    getMessages: builder.query({
+      query: (otherUserId) => `messages/${otherUserId}`,
+      transformResponse: (response: any) => response.data,
     }),
   }),
 });
 
 export const {
   useGetChatRoomsQuery,
-  useGetMessagesByRoomIdQuery,
-  useSendMessageMutation,
   useCreateOrGetChatRoomMutation,
+  useSendChatRequestMutation,
+  useRespondToChatRequestMutation,
+  useGetMyChatRequestsQuery,
+  useGetMessagesQuery,
 } = chatApiSlice;

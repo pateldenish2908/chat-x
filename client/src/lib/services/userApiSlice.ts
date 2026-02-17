@@ -19,20 +19,29 @@ interface LoginResponse {
 interface NearbyUser {
   _id: string;
   name: string;
-  avatar: string;
-  distance: number;
+  profileImage?: string;
+  distance?: number;
+  gender?: string;
+  bio?: string;
 }
 
 export const userApiSlice = createApi({
   reducerPath: "userApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Users"],
+  tagTypes: ["Users", "NearbyUsers", "Blocks"],
   endpoints: (builder) => ({
-    getUsers: builder.query({
-      query: ({ page, pageSize, search, sortField, sortOrder }) => ({
-        url: "users",
-        params: { page, pageSize, search, sortField, sortOrder },
+    getMe: builder.query({
+      query: () => "users/me",
+      providesTags: ["Users"],
+    }),
+
+    updateMe: builder.mutation({
+      query: (userData) => ({
+        url: "users/me",
+        method: "PATCH",
+        body: userData,
       }),
+      invalidatesTags: ["Users"],
     }),
 
     register: builder.mutation({
@@ -53,35 +62,67 @@ export const userApiSlice = createApi({
 
     logout: builder.mutation({
       query: () => ({
-        url: "/auth/logout",
+        url: "auth/logout",
         method: "POST",
       }),
     }),
 
-    // ✅ New Nearby Users Query
+    // ✅ Discovery
     getNearbyUsers: builder.query<
       NearbyUser[],
-      { latitude: number; longitude: number; userId: string }
+      { latitude: number; longitude: number; radius?: number; page?: number; limit?: number }
     >({
-      query: ({ latitude, longitude, userId }) => ({
-        url: `users/nearby`,
-        params: { latitude, longitude, userId },
+      query: (params) => ({
+        url: `discover`,
+        params,
       }),
-      transformResponse: (response: { users: NearbyUser[] }) =>
-        response.users.map((u) => ({
-          _id: u._id,
-          name: u.name,
-          avatar: u.avatar || "https://mui.com/static/images/avatar/1.jpg",
-          distance: u.distance,
-        })),
+      providesTags: ["NearbyUsers"],
+    }),
+
+    // 🚫 Blocking
+    blockUser: builder.mutation({
+      query: (blockedId: string) => ({
+        url: "blocks/block",
+        method: "POST",
+        body: { blockedId },
+      }),
+      invalidatesTags: ["NearbyUsers", "Blocks"],
+    }),
+
+    unblockUser: builder.mutation({
+      query: (blockedId: string) => ({
+        url: "blocks/unblock",
+        method: "POST",
+        body: { blockedId },
+      }),
+      invalidatesTags: ["NearbyUsers", "Blocks"],
+    }),
+
+    getBlockedUsers: builder.query({
+      query: () => "blocks",
+      providesTags: ["Blocks"],
+    }),
+
+    // 🚩 Reporting
+    reportUser: builder.mutation({
+      query: (reportData: { reportedId: string; reason: string; description?: string }) => ({
+        url: "reports",
+        method: "POST",
+        body: reportData,
+      }),
     }),
   }),
 });
 
 export const {
-  useGetUsersQuery,
+  useGetMeQuery,
+  useUpdateMeMutation,
   useRegisterMutation,
   useLoginMutation,
   useLogoutMutation,
   useGetNearbyUsersQuery,
+  useBlockUserMutation,
+  useUnblockUserMutation,
+  useGetBlockedUsersQuery,
+  useReportUserMutation,
 } = userApiSlice;

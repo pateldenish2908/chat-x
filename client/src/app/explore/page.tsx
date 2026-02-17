@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { getCurrentUser } from "@/utils/getCurrentUser";
 import Image from "next/image";
-import { useCreateOrGetChatRoomMutation } from "@/lib/services/chatApiSlice";
+import { useSendChatRequestMutation } from "@/lib/services/chatApiSlice";
 import { useGetNearbyUsersQuery } from "@/lib/services/userApiSlice";
 import Loader from "../components/Loader";
 import { useEffect, useState, useCallback } from "react";
@@ -44,31 +44,28 @@ const NearbyUsers = () => {
     getLocation();
   }, [getLocation]);
 
-  const { data: users = [], isLoading, refetch } = useGetNearbyUsersQuery(
+  const { data: response, isLoading, refetch } = useGetNearbyUsersQuery(
     {
       latitude: location?.lat || 0,
       longitude: location?.lng || 0,
-      userId: currentUserId,
+      radius: 50,
     },
     {
       refetchOnMountOrArgChange: true,
       skip: !currentUserId || !location,
-      pollingInterval: 30000, // Poll every 30 seconds
     }
   );
 
-  const [createOrGetChatRoom, { isLoading: createOrGetChatRoomLoading }] =
-    useCreateOrGetChatRoomMutation();
+  const users = (response as any)?.data || [];
 
-  const handleCreateChatRoom = async (otherUserId: string) => {
+  const [sendChatRequest, { isLoading: isSendingRequest }] = useSendChatRequestMutation();
+
+  const handleSendRequest = async (otherUserId: string) => {
     try {
-      const room = await createOrGetChatRoom({
-        userId1: currentUserId,
-        userId2: otherUserId,
-      }).unwrap();
-      router.push(`/chat/${room._id}`);
-    } catch (error) {
-      console.error("Failed to create or get chat room", error);
+      await sendChatRequest(otherUserId).unwrap();
+      alert("Chat request sent!");
+    } catch (error: any) {
+      alert(error.data?.message || "Failed to send request");
     }
   };
 
@@ -78,11 +75,9 @@ const NearbyUsers = () => {
 
   return (
     <div className="min-h-screen bg-[#0f1115] p-8 text-slate-100 relative overflow-hidden">
-      {/* Decorative blurs */}
       <div className="absolute top-0 right-0 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-indigo-600/5 rounded-full blur-[100px] sm:blur-[150px] -mr-32 -mt-32 sm:-mr-64 sm:-mt-64"></div>
       <div className="absolute bottom-0 left-0 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-purple-600/5 rounded-full blur-[100px] sm:blur-[150px] -ml-32 -mb-32 sm:-ml-64 sm:-mb-64"></div>
 
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-10 md:mb-12 gap-6 relative z-10">
         <div className="text-center md:text-left">
           <h1 className="text-4xl sm:text-5xl font-black tracking-tighter uppercase italic leading-none">Nearby Nodes</h1>
@@ -91,99 +86,64 @@ const NearbyUsers = () => {
         <div className="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-4 w-full md:w-auto">
           <button
             onClick={() => { getLocation(); refetch(); }}
-            className="flex-1 md:flex-none items-center justify-center gap-3 bg-[#1a1d23] border border-[#2d3139] text-slate-300 font-black uppercase tracking-widest text-[8px] sm:text-[10px] px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-xl hover:bg-[#2d3139] hover:text-white transition-all duration-300 active:scale-95"
+            className="flex-1 md:flex-none bg-[#1a1d23] border border-[#2d3139] text-slate-300 font-black uppercase tracking-widest text-[8px] sm:text-[10px] px-6 py-4 rounded-2xl hover:bg-[#2d3139] transition-all"
           >
             Scan Area
           </button>
           <button
             onClick={goToChatList}
-            className="flex-1 md:flex-none items-center justify-center gap-3 bg-[#1a1d23] border border-[#2d3139] text-slate-300 font-black uppercase tracking-widest text-[8px] sm:text-[10px] px-6 sm:px-8 py-3 sm:py-4 rounded-2xl shadow-xl hover:bg-[#2d3139] hover:text-white transition-all duration-300 active:scale-95 group"
+            className="flex-1 md:flex-none bg-[#1a1d23] border border-[#2d3139] text-slate-300 font-black uppercase tracking-widest text-[8px] sm:text-[10px] px-6 py-4 rounded-2xl hover:bg-[#2d3139] transition-all"
           >
-            <span className="text-base sm:text-lg group-hover:-translate-x-1 transition-transform">←</span>
-            Active Channels
+            ← Active Channels
           </button>
         </div>
       </div>
 
-      {/* Location Error / Prompt */}
       {error && !location && (
-        <div className="bg-rose-500/10 border-2 border-rose-500/20 text-rose-500 p-8 rounded-[2.5rem] mb-12 text-center shadow-2xl backdrop-blur-md relative z-10">
-          <p className="text-xl font-black uppercase tracking-widest mb-3">🛰️ Navigation Offline</p>
-          <p className="font-bold text-sm max-w-md mx-auto leading-relaxed">{error}</p>
-          <button
-            onClick={getLocation}
-            className="mt-6 px-6 py-2 bg-rose-500/20 hover:bg-rose-500/30 w-fit mx-auto rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-colors"
-          >
-            Retry Authorization
-          </button>
+        <div className="bg-rose-500/10 border-2 border-rose-500/20 text-rose-500 p-8 rounded-[2.5rem] mb-12 text-center relative z-10">
+          <p className="font-black uppercase tracking-widest">🛰️ Navigation Offline</p>
+          <p className="text-sm mt-2">{error}</p>
+          <button onClick={getLocation} className="mt-4 px-4 py-2 bg-rose-500/20 rounded-full text-[10px] font-black uppercase tracking-widest">Retry</button>
         </div>
       )}
 
-      {/* Loader */}
       {!location && !error ? (
-        <div className="h-[60vh] flex items-center justify-center relative z-10">
-          <Loader text="Pining Satellites..." />
-        </div>
-      ) : isLoading || createOrGetChatRoomLoading ? (
-        <div className="h-[60vh] flex items-center justify-center relative z-10">
-          <Loader text="Decoding Frequency..." />
-        </div>
+        <div className="h-[60vh] flex items-center justify-center relative z-10"><Loader text="Pining Satellites..." /></div>
+      ) : isLoading || isSendingRequest ? (
+        <div className="h-[60vh] flex items-center justify-center relative z-10"><Loader text="Initializing..." /></div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 relative z-10">
-          {users.map(
-            (user: {
-              _id: string;
-              name: string;
-              avatar: string;
-              distance: number;
-            }) => (
-              <div
-                key={user._id}
-                className="group bg-[#1a1d23]/80 backdrop-blur-md border border-[#2d3139] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 flex flex-col items-center hover:border-indigo-500/30 transition-all duration-500 shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-2 relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl -mr-12 -mt-12 group-hover:bg-indigo-500/10 transition-all"></div>
-                <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-2xl sm:rounded-3xl overflow-hidden mb-6 sm:mb-8 ring-4 ring-[#0f1115] shadow-2xl transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
-                  <Image
-                    src={user.avatar}
-                    alt={user.name}
-                    className="object-cover"
-                    fill
-                    sizes="144px"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1a1d23] to-transparent opacity-0 group-hover:opacity-60 transition-opacity"></div>
-                </div>
-
-                <div className="text-center w-full">
-                  <h2 className="text-2xl font-black text-slate-100 tracking-tight group-hover:text-indigo-400 transition-colors">{user.name}</h2>
-                  <div className="flex items-center justify-center gap-2 mt-2">
-                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></span>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                      {user.distance?.toFixed(2)} km range
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleCreateChatRoom(user._id)}
-                  className="w-full mt-8 bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-indigo-900/40 transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 overflow-hidden relative"
-                >
-                  <span className="relative z-10">Initialize Chat</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                </button>
+          {users.map((user: any) => (
+            <div key={user._id} className="group bg-[#1a1d23]/80 backdrop-blur-md border border-[#2d3139] rounded-[2.5rem] p-8 flex flex-col items-center hover:border-indigo-500/30 transition-all shadow-xl">
+              <div className="relative w-36 h-36 rounded-3xl overflow-hidden mb-8 ring-4 ring-[#0f1115] shadow-2xl">
+                <Image src={user.profileImage || "https://mui.com/static/images/avatar/1.jpg"} alt={user.name} fill className="object-cover" />
               </div>
-            )
-          )}
+              <div className="text-center w-full">
+                <h2 className="text-2xl font-black text-slate-100">{user.name}</h2>
+                <p className="text-[10px] text-slate-400 mt-1 line-clamp-1 italic">{user.bio || 'No bio available'}</p>
+                <div className="flex items-center justify-center gap-2 mt-4">
+                  <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></span>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Node In Range</p>
+                </div>
+              </div>
+              <button
+                onClick={() => handleSendRequest(user._id)}
+                disabled={isSendingRequest}
+                className="w-full mt-8 bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl transition-all"
+              >
+                {isSendingRequest ? 'Transmitting...' : 'Send Request'}
+              </button>
+            </div>
+          ))}
           {users.length === 0 && (
             <div className="col-span-full text-center py-20 text-slate-500">
               <p className="text-xl font-black uppercase tracking-widest">No nodes in range</p>
-              <p className="text-sm mt-2">Try expanding your scan radius or check back later</p>
             </div>
           )}
         </div>
       )}
     </div>
   );
-}
+};
 
 export default NearbyUsers;

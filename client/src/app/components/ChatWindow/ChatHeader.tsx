@@ -3,11 +3,9 @@ import Link from "next/link";
 
 interface ChatHeaderProps {
     roomId: string;
-    onAudioCall: () => void;
-    onVideoCall: () => void;
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ roomId, onAudioCall, onVideoCall }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ roomId }) => {
     return (
         <div className="px-3 sm:px-6 py-4 sm:py-5 bg-[#0f1115] border-b border-[#2d3139] flex justify-between items-center z-10 backdrop-blur-xl bg-opacity-90 transition-all">
             <div className="flex items-center gap-2 sm:gap-4 overflow-hidden max-w-[50%] xs:max-w-[60%] sm:max-w-none">
@@ -20,21 +18,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ roomId, onAudioCall, onVideoCal
                 </div>
             </div>
             <div className="flex-shrink-0 flex items-center gap-2 sm:gap-4 ml-2">
-                <button
-                    onClick={onAudioCall}
-                    className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-[#1a1d23] hover:bg-[#2d3139] text-slate-400 hover:text-indigo-400 transition-all duration-300 active:scale-90 border border-[#2d3139]"
-                    title="Secure Voice Call"
-                >
-                    <span className="text-lg sm:text-xl">📞</span>
-                </button>
-                <button
-                    onClick={onVideoCall}
-                    className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl shadow-indigo-900/40 transition-all duration-300 active:scale-95 border border-indigo-500/20 group"
-                    title="Encrypted Video Call"
-                >
-                    <span className="text-lg sm:text-xl group-hover:animate-pulse">📹</span>
-                </button>
-                <div className="w-px h-8 bg-[#2d3139] mx-1 sm:mx-2" />
                 <Link href="/chat">
                     <span className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl text-slate-500 hover:bg-red-500/10 hover:text-red-500 transition-all cursor-pointer border border-transparent hover:border-red-500/20">
                         ✖

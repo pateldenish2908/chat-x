@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../middlewares/auth.middleware');
 const {
     addUser,
     updateUser,
@@ -9,8 +10,12 @@ const {
     seedUsers,
     getUserWithPaginationSearchingAndSorting,
     getNearbyUsers,
+    getMe,
+    updateMe,
 } = require('../controllers/user.controller');
 
+router.get('/me', authMiddleware, getMe);
+router.patch('/me', authMiddleware, updateMe);
 router.get('/nearby', getNearbyUsers);
 router.post('/', addUser);
 router.put('/:id', updateUser);

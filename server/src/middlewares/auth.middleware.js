@@ -1,6 +1,7 @@
 const { verifyAccessToken } = require('../utils/jwt.util');
+const redisClient = require('../config/redis');
 
-function authMiddleware(req, res, next) {
+async function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -11,6 +12,15 @@ function authMiddleware(req, res, next) {
 
   try {
     const user = verifyAccessToken(token);
+
+    // Single active session check (only if Redis is available)
+    if (redisClient.isReady) {
+      const activeToken = await redisClient.get(`user:${user.id}:session`);
+      if (activeToken && activeToken !== token) {
+        return res.status(401).json({ message: 'Session invalidated by another login' });
+      }
+    }
+
     req.user = user;
     next();
   } catch (err) {
