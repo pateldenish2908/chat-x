@@ -16,7 +16,7 @@ export const saveMessage = (roomId: string, message: Message) => {
     }
 };
 
-export const updateMessageStatus = (roomId: string, messageId: string, status: string) => {
+export const updateMessageStatus = (roomId: string, messageId: string, status: "sent" | "delivered" | "read") => {
     const history = getChatHistory();
     if (history[roomId]) {
         const message = history[roomId].find(m => m.messageId === messageId);

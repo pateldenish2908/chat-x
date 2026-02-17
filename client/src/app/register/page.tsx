@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRegisterMutation } from "@/lib/services/userApiSlice";
 import { useForm } from "react-hook-form";

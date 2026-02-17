@@ -73,7 +73,7 @@ export default function ChatWindow({ roomId, user }: Props) {
     const onStatusUpdate = (data: { messageId: string, status: string }) => {
       setMessages((prev) => {
         const updated = prev.map(m => m.messageId === data.messageId ? { ...m, status: data.status as any } : m);
-        updateMessageStatus(roomId, data.messageId, data.status);
+        updateMessageStatus(roomId, data.messageId, data.status as "sent" | "delivered" | "read");
         return updated;
       });
     };
