@@ -10,6 +10,8 @@ const SocketEvents = Object.freeze({
     MESSAGE_READ: 'message_read',
     TYPING_START: 'typing_start',
     TYPING_STOP: 'typing_stop',
+    TYPING_STARTED: 'typing-started',
+    TYPING_STOPPED: 'typing-stopped',
     USER_ONLINE: 'user_online',
     USER_OFFLINE: 'user_offline',
     AUTHENTICATE: 'authenticate',

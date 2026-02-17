@@ -33,14 +33,17 @@ function initSocket(server) {
     const userId = socket.data.userId;
     console.log(`User connected: ${userId}`);
 
-    // Track online status in Redis
-    await redisClient.set(`user:${userId}:socketId`, socket.id);
-    await redisClient.set(`user:${userId}:online`, 'true');
+    // Track online status in Redis (optional)
+    if (redisClient.isReady) {
+      await redisClient.set(`user:${userId}:socketId`, socket.id);
+      await redisClient.set(`user:${userId}:online`, 'true');
+    }
 
     // Broadcast user online
     io.emit(SocketEvents.USER_ONLINE, { userId });
 
     // Join user's own room for personal notifications
+    // This allows us to use io.to(userId) to send messages to all user's devices
     socket.join(userId);
 
     // Register handlers
@@ -48,9 +51,11 @@ function initSocket(server) {
 
     socket.on(SocketEvents.DISCONNECT, async () => {
       console.log(`User disconnected: ${userId}`);
-      await redisClient.del(`user:${userId}:socketId`);
-      await redisClient.set(`user:${userId}:online`, 'false');
-      await redisClient.set(`user:${userId}:lastSeen`, new Date().toISOString());
+      if (redisClient.isReady) {
+        await redisClient.del(`user:${userId}:socketId`);
+        await redisClient.set(`user:${userId}:online`, 'false');
+        await redisClient.set(`user:${userId}:lastSeen`, new Date().toISOString());
+      }
 
       io.emit(SocketEvents.USER_OFFLINE, { userId });
     });
