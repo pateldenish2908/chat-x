@@ -4,9 +4,8 @@ import React from "react";
 import { useGetMyChatRequestsQuery, useRespondToChatRequestMutation } from "@/lib/services/chatApiSlice";
 import { getCurrentUser } from "@/utils/getCurrentUser";
 
-const user = getCurrentUser();
-
 export default function ChatRequests() {
+    const user = getCurrentUser();
     const { data: requests = [], isLoading, refetch } = useGetMyChatRequestsQuery(undefined, {
         pollingInterval: 30000,
     });
@@ -25,7 +24,12 @@ export default function ChatRequests() {
     };
 
     const pendingRequests = Array.isArray(requests)
-        ? requests.filter((r: any) => r.status === 'pending' && r.receiver?._id === user?._id)
+        ? requests.filter((r: any) => {
+            const isPending = r.status === 'pending';
+            const receiverId = r.receiver?._id || r.receiver;
+            const currentUserId = user?._id;
+            return isPending && receiverId === currentUserId;
+        })
         : [];
 
     if (isLoading || pendingRequests.length === 0) return null;
