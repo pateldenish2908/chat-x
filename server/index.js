@@ -11,21 +11,29 @@ const server = http.createServer(app);
 initSocket(server);
 
 // Connect to DB and start server
-connectDB();
+const startServer = async () => {
+  try {
+    await connectDB();
+    const PORT = config.PORT || 5000;
+    const serverInstance = server.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server running on port ${PORT} in ${config.NODE_ENV} mode`);
+    });
 
-const PORT = config.PORT;
-const serverInstance = server.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on port ${PORT} in ${config.NODE_ENV} mode`);
-});
-
-// Handle unhandled rejections
-process.on('unhandledRejection', (err) => {
-  console.error('UNHANDLED REJECTION! 💥 Shutting down...');
-  console.error(err.name, err.message);
-  serverInstance.close(() => {
+    // Handle unhandled rejections
+    process.on('unhandledRejection', (err) => {
+      console.error('UNHANDLED REJECTION! 💥 Shutting down...');
+      console.error(err.name, err.message);
+      serverInstance.close(() => {
+        process.exit(1);
+      });
+    });
+  } catch (err) {
+    console.error('❌ Failed to start server:', err.message);
     process.exit(1);
-  });
-});
+  }
+};
+
+startServer();
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
