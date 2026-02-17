@@ -3,7 +3,7 @@ const Block = require('../models/block.model');
 
 const getNearbyUsers = async (req, res) => {
     try {
-        const { longitude, latitude, radius = 50, page = 1, limit = 10 } = req.query;
+        const { longitude, latitude, radius = 5000, page = 1, limit = 20 } = req.query;
 
         if (!longitude || !latitude) {
             return res.status(400).json({ message: 'Longitude and latitude are required' });
@@ -17,26 +17,38 @@ const getNearbyUsers = async (req, res) => {
         const blockedMeIds = await Block.find({ blocked: req.user.id }).distinct('blocker');
         const excludedIds = [...new Set([...blockedIds, ...blockedMeIds, req.user.id])];
 
-        const users = await User.find({
+        // 1. Try to find nearby users first
+        let users = await User.find({
             location: {
                 $near: {
                     $geometry: {
                         type: 'Point',
                         coordinates: [parseFloat(longitude), parseFloat(latitude)],
                     },
-                    $maxDistance: radius * 1000, // convert km to meters
+                    $maxDistance: parseInt(radius) * 1000, // convert km to meters
                 },
             },
             _id: { $nin: excludedIds },
-            locationEnabled: true,
             isActive: true,
         })
             .select('name gender bio profileImage birthday locationEnabled lastSeen')
             .limit(limit * 1)
             .skip((page - 1) * limit);
 
+        // 2. Fallback: If no one is nearby, show all active users (for cold-start/testing)
+        if (users.length === 0) {
+            users = await User.find({
+                _id: { $nin: excludedIds },
+                isActive: true
+            })
+                .select('name gender bio profileImage birthday locationEnabled lastSeen')
+                .limit(limit * 1)
+                .sort('-lastSeen');
+        }
+
         res.status(200).json({
             success: true,
+            count: users.length,
             data: users,
         });
     } catch (error) {
