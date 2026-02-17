@@ -88,8 +88,8 @@ const getMyRequests = async (req, res) => {
         const requests = await ChatRequest.find({
             $or: [{ sender: req.user.id }, { receiver: req.user.id }],
         })
-            .populate('sender', 'name profileImage')
-            .populate('receiver', 'name profileImage')
+            .populate('sender', 'name profileImage _id')
+            .populate('receiver', 'name profileImage _id')
             .sort('-createdAt');
 
         res.status(200).json({

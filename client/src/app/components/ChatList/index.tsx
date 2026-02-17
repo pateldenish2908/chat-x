@@ -10,9 +10,8 @@ import { SocketEvents } from "@/constants/socketEvents";
 import ChatHeader from "./ChatHeader";
 import ChatRequests from "./ChatRequests";
 
-const user = getCurrentUser();
-
 export default function ChatList() {
+  const user = getCurrentUser();
   const {
     data: rooms = [],
     isLoading,

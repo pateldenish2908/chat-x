@@ -26,13 +26,22 @@ export default function ChatRequests() {
     const pendingRequests = Array.isArray(requests)
         ? requests.filter((r: any) => {
             const isPending = r.status === 'pending';
-            const receiverId = r.receiver?._id || r.receiver;
-            const currentUserId = user?._id;
-            return isPending && receiverId === currentUserId;
+            const receiverId = (r.receiver?._id || r.receiver || '').toString();
+            const currentUserId = (user?._id || '').toString();
+
+            const isForMe = isPending && receiverId === currentUserId;
+
+            // Helpful debug log if data exists but not shown
+            if (isPending && !isForMe && requests.length > 0) {
+                console.debug(`Filtered out request ${r._id}: ReceiverID(${receiverId}) vs CurrentUserID(${currentUserId})`);
+            }
+
+            return isForMe;
         })
         : [];
 
-    if (isLoading || pendingRequests.length === 0) return null;
+    if (isLoading) return null;
+    if (pendingRequests.length === 0) return null;
 
     return (
         <div className="mb-6 space-y-3">

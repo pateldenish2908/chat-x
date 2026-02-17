@@ -20,7 +20,7 @@ export function getCurrentUser(): User {
   try {
     const userData = JSON.parse(tokenString);
     return {
-      _id: userData?._id?.toString() || '',
+      _id: (userData?._id || userData?.id || '')?.toString(),
       name: userData?.name || '',
       email: userData?.email || '',
     };
