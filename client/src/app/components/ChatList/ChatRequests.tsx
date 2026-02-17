@@ -32,7 +32,7 @@ export default function ChatRequests() {
                 <div key={req._id} className="p-4 bg-indigo-600/10 border border-indigo-500/20 rounded-2xl flex flex-col gap-3 backdrop-blur-md">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center text-white font-black text-xs">
-                            {req.sender?.name?.[0].toUpperCase()}
+                            {req.sender?.name?.[0]?.toUpperCase() || "?"}
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-xs font-bold text-slate-100 truncate">{req.sender?.name}</p>

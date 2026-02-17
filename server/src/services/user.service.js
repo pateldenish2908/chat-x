@@ -13,13 +13,9 @@ const registerUser = async (body) => {
     }
 
     const user = await User.create({
-      email,
-      password, // You should hash the password in production
-      name,
-      gender,
-      lookingFor,
-      birthday,
-      location,
+      ...body,
+      // If client sends age but DB wants birthday, we can set a dummy one
+      birthday: body.birthday || (body.age ? new Date(new Date().setFullYear(new Date().getFullYear() - body.age)) : undefined)
     });
 
     return user;
@@ -30,8 +26,8 @@ const registerUser = async (body) => {
 
 const loginUser = async (email, password) => {
   const user = await User.findOne({ email }).select('+password');
-  const match  =await user.comparePassword(password);
-  if (!user || !match ) {
+  const match = await user.comparePassword(password);
+  if (!user || !match) {
     throw new Error('Invalid credentials');
   }
 
