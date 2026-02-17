@@ -68,6 +68,7 @@ export const chatApiSlice = createApi({
     getMyChatRequests: builder.query({
       query: () => "chat-requests/my-requests",
       providesTags: ["ChatRequests"],
+      transformResponse: (response: any) => response.data,
     }),
     // 📖 Chat History
     getMessages: builder.query({

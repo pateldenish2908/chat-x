@@ -57,7 +57,11 @@ export default function RegisterPage() {
         },
         (error) => {
           console.error("Error getting location:", error);
-          alert("Unable to fetch location. Please enable location access.");
+          if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+            alert("Location requires a Secure Context (HTTPS or localhost). Please use HTTPS to register.");
+          } else {
+            alert("Unable to fetch location. Please enable location access.");
+          }
         }
       );
     } else {

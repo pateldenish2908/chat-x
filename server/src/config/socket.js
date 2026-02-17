@@ -11,7 +11,23 @@ const config = require('./env');
 function initSocket(server) {
   io = new Server(server, {
     cors: {
-      origin: config.FRONTEND_URL,
+      origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        const whitelist = [config.FRONTEND_URL, 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001'].filter(Boolean);
+        const normalizedTarget = origin.replace(/\/$/, "");
+        const isWhitelisted = whitelist.some(url => url.replace(/\/$/, "") === normalizedTarget);
+        const isLocalDev = config.NODE_ENV === 'development' && (
+          origin.startsWith('http://localhost') ||
+          origin.startsWith('http://127.0.0.1') ||
+          origin.startsWith('http://192.168.') ||
+          origin.startsWith('http://10.')
+        );
+        if (isWhitelisted || isLocalDev) {
+          callback(null, true);
+        } else {
+          callback(new Error('CORS not allowed for socket'), false);
+        }
+      },
       methods: ['GET', 'POST'],
     },
   });

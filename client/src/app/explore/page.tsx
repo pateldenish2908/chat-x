@@ -32,7 +32,11 @@ const NearbyUsers = () => {
         },
         (err) => {
           console.error("Error getting location", err);
-          setError("User denied location access or location unavailable.");
+          if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+            setError("Location requires a Secure Context (HTTPS or localhost). Please use HTTPS.");
+          } else {
+            setError("User denied location access or location unavailable.");
+          }
         }
       );
     } else {
@@ -56,7 +60,7 @@ const NearbyUsers = () => {
     }
   );
 
-  const users = (response as any)?.data || [];
+  const users = response || [];
 
   const [sendChatRequest, { isLoading: isSendingRequest }] = useSendChatRequestMutation();
 

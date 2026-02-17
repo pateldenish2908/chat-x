@@ -76,6 +76,7 @@ export const userApiSlice = createApi({
         url: `discover`,
         params,
       }),
+      transformResponse: (response: any) => response.data,
       providesTags: ["NearbyUsers"],
     }),
 
@@ -100,6 +101,7 @@ export const userApiSlice = createApi({
 
     getBlockedUsers: builder.query({
       query: () => "blocks",
+      transformResponse: (response: any) => response.data,
       providesTags: ["Blocks"],
     }),
 

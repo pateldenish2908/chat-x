@@ -8,6 +8,8 @@ export default function ChatRequests() {
         pollingInterval: 30000,
     });
 
+
+
     const [respond] = useRespondToChatRequestMutation();
 
     const handleResponse = async (requestId: string, status: 'accepted' | 'declined') => {
@@ -19,7 +21,7 @@ export default function ChatRequests() {
         }
     };
 
-    const pendingRequests = requests.filter((r: any) => r.status === 'pending');
+    const pendingRequests = requests?.filter((r: any) => r.status === 'pending');
 
     if (isLoading || pendingRequests.length === 0) return null;
 

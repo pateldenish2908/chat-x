@@ -33,6 +33,14 @@ export default function LoginPage() {
   const onSubmit = async (values: z.infer<typeof validationSchema>) => {
     setError(null);
     try {
+      // 1. Request location first (improves UX by getting permission early)
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          () => { console.log("Location permission granted"); },
+          () => { console.warn("Location permission denied"); }
+        );
+      }
+
       const result = await login(values).unwrap();
 
       if (result && result.data) {
