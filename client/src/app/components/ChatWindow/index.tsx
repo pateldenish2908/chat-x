@@ -7,19 +7,42 @@ import ChatHeader from "./ChatHeader";
 import MessageBubble from "./MessageBubble";
 import ChatInput from "./ChatInput";
 import { v4 as uuidv4 } from 'uuid';
+import { useGetMessagesQuery, useGetChatRoomsQuery } from "@/lib/services/chatApiSlice";
 
 interface Props {
   roomId: string;
   user: User;
 }
 
-import { useGetMessagesQuery } from "@/lib/services/chatApiSlice";
-
 export default function ChatWindow({ roomId, user }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Get the other user's ID from the room's participants
+  const { data: chatRooms } = useGetChatRoomsQuery(undefined);
+  const otherUserId = useMemo(() => {
+    if (!chatRooms || !user?._id) return null;
+    const room = chatRooms.find((r: any) => r._id === roomId);
+    if (!room) return null;
+    const other = room.participants.find((p: any) => {
+      const pid = typeof p === 'object' ? p._id : p;
+      return pid !== user._id;
+    });
+    return typeof other === 'object' ? other?._id : other;
+  }, [chatRooms, roomId, user?._id]);
+
+  const otherUserName = useMemo(() => {
+    if (!chatRooms || !user?._id) return 'Chat';
+    const room = chatRooms.find((r: any) => r._id === roomId);
+    if (!room) return 'Chat';
+    const other = room.participants.find((p: any) => {
+      const pid = typeof p === 'object' ? p._id : p;
+      return pid !== user._id;
+    });
+    return typeof other === 'object' ? other?.name : 'Chat';
+  }, [chatRooms, roomId, user?._id]);
 
   const { data: dbMessages, isLoading: isFetchingHistory } = useGetMessagesQuery(roomId, {
     skip: !roomId,
@@ -28,10 +51,7 @@ export default function ChatWindow({ roomId, user }: Props) {
   // Initialize messages from DB and LocalStorage
   useEffect(() => {
     if (dbMessages) {
-      // Merge logic: prefer DB but keep LS if DB is empty/lagging
-      // In this case, we just replace for simplicity as DB is source of truth
       setMessages(dbMessages);
-      // Update LS to match DB for consistency
       localStorage.setItem(`messages_${roomId}`, JSON.stringify(dbMessages));
     } else {
       const history = getMessages(roomId);
@@ -48,24 +68,24 @@ export default function ChatWindow({ roomId, user }: Props) {
   }, [messages, isTyping, scrollToBottom]);
 
   useEffect(() => {
-    // Backend uses direct socket emission, but we join room for legacy if needed
-    // socket.emit(SocketEvents.JOIN, { roomId });
-
-    const onReceive = (msg: Message) => {
-      // In this version, msg comes with messageId, senderId, content
+    const onReceive = (msg: any) => {
       setMessages((prev) => {
+        // Avoid duplicate (optimistic message already added)
+        if (prev.some(m => m.messageId === msg.messageId)) {
+          return prev.map(m => m.messageId === msg.messageId ? { ...m, ...msg } : m);
+        }
         const newMessages = [...prev, msg];
         saveMessage(roomId, msg);
         return newMessages;
       });
 
-      if (typeof msg.sender === 'object' ? msg.sender?._id !== user._id : msg.sender !== user._id) {
+      const senderId = typeof msg.sender === 'object' ? msg.sender?._id : (msg.senderId || msg.sender);
+      if (senderId !== user._id) {
         playMessageSound();
         setIsTyping(false);
-        // Notify sender that message is read
         socket.emit(SocketEvents.MESSAGE_READ, {
           messageId: msg.messageId,
-          senderId: typeof msg.sender === 'object' ? msg.sender?._id : msg.sender
+          senderId,
         });
       }
     };
@@ -112,21 +132,22 @@ export default function ChatWindow({ roomId, user }: Props) {
   };
 
   const handleTyping = useCallback((typing: boolean) => {
-    const receiverId = roomId; // Assuming roomId is the other user's ID for 1v1
+    if (!otherUserId) return; // Can't emit typing without knowing the receiver
     if (typing) {
-      socket.emit(SocketEvents.TYPING_START, { receiverId });
+      socket.emit(SocketEvents.TYPING_START, { receiverId: otherUserId });
 
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => {
-        socket.emit(SocketEvents.TYPING_STOP, { receiverId });
+        socket.emit(SocketEvents.TYPING_STOP, { receiverId: otherUserId });
       }, 2000);
+    } else {
+      socket.emit(SocketEvents.TYPING_STOP, { receiverId: otherUserId });
     }
-  }, [roomId]);
+  }, [otherUserId]);
 
   const sendMessage = useCallback((content: string) => {
-    if (!content) return;
+    if (!content.trim()) return;
     const messageId = uuidv4();
-    const receiverId = roomId; // 1v1 mapping
 
     const tempMsg: Message = {
       messageId,
@@ -141,26 +162,33 @@ export default function ChatWindow({ roomId, user }: Props) {
     setMessages((prev) => [...prev, tempMsg]);
     saveMessage(roomId, tempMsg);
 
+    // Emit with correct roomId (NOT receiverId)
     socket.emit(SocketEvents.SEND_MESSAGE, {
       messageId,
-      receiverId,
+      roomId,      // ✅ Critical: server uses this to find the chat room
       content,
     });
-  }, [roomId, user._id]);
+
+    // Stop typing indicator on send
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    if (otherUserId) {
+      socket.emit(SocketEvents.TYPING_STOP, { receiverId: otherUserId });
+    }
+  }, [roomId, user._id, otherUserId]);
 
   const renderedMessages = useMemo(() => (
     messages.map((msg, index) => (
       <MessageBubble
         key={msg.messageId || index}
         message={msg}
-        isOwn={(typeof msg.sender === 'object' ? msg.sender?._id : msg.sender) === user._id}
+        isOwn={(typeof msg.sender === 'object' ? (msg.sender as any)?._id : msg.sender) === user._id}
       />
     ))
   ), [messages, user._id]);
 
   return (
     <div className="flex flex-col h-full bg-background overflow-hidden w-full transition-all duration-300">
-      <ChatHeader roomId={roomId} />
+      <ChatHeader roomId={roomId} otherUserName={otherUserName} />
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-10 space-y-6 custom-scrollbar bg-transparent">

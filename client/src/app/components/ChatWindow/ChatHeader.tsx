@@ -3,18 +3,25 @@ import Link from "next/link";
 
 interface ChatHeaderProps {
     roomId: string;
+    otherUserName?: string;
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ roomId }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ roomId, otherUserName }) => {
+    const initials = otherUserName
+        ? otherUserName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+        : '#';
+
     return (
         <div className="px-4 sm:px-6 py-4 bg-background border-b border-border flex justify-between items-center z-10 sticky top-0">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-accent font-semibold text-sm">
-                    #
+                <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent font-semibold text-sm">
+                    {initials}
                 </div>
                 <div className="min-w-0">
-                    <h2 className="font-semibold text-foreground text-sm truncate">Channel</h2>
-                    <p className="text-[11px] text-[#6e6e6a] truncate">{roomId}</p>
+                    <h2 className="font-semibold text-foreground text-sm truncate">
+                        {otherUserName || 'Private Chat'}
+                    </h2>
+                    <p className="text-[11px] text-[#6e6e6a] truncate">Active now</p>
                 </div>
             </div>
             <div className="flex items-center gap-3">
