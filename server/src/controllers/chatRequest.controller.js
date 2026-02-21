@@ -37,6 +37,10 @@ const sendChatRequest = async (req, res) => {
             receiver: receiverId,
         });
 
+        // Notify the receiver about the new request
+        const io = require('../config/socket').getIO();
+        io.to(receiverId).emit('new_chat_request', chatRequest);
+
         res.status(201).json({
             success: true,
             data: chatRequest,
@@ -72,6 +76,14 @@ const respondToChatRequest = async (req, res) => {
                 chatRequest.receiver.toString()
             );
         }
+
+        // Notify the sender about the response
+        const io = require('../config/socket').getIO();
+        io.to(chatRequest.sender.toString()).emit('chat_request_responded', {
+            requestId: chatRequest._id,
+            status: status,
+            chatRoom: chatRoom
+        });
 
         res.status(200).json({
             success: true,

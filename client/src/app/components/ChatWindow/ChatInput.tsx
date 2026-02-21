@@ -27,25 +27,25 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onTyping }) => {
     };
 
     return (
-        <div className="p-3 sm:p-6 bg-[#0f1115] border-t border-[#2d3139]">
-            <div className="max-w-5xl mx-auto flex items-center gap-2 sm:gap-4 bg-[#1a1d23] p-1.5 sm:p-2 rounded-[1.25rem] sm:rounded-[2rem] border border-[#2d3139] group focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-500/10 transition-all duration-500 shadow-inner">
+        <div className="p-4 sm:p-6 bg-background border-t border-border">
+            <div className="max-w-4xl mx-auto flex items-end gap-3 bg-surface p-2 rounded-2xl border border-border focus-within:border-[#cbcbcb] transition-colors shadow-sm">
                 <input
-                    className="flex-1 bg-transparent px-3 sm:px-6 py-2.5 sm:py-3 focus:outline-none text-slate-100 placeholder-slate-600 text-[13px] sm:text-sm font-medium"
+                    className="flex-1 bg-transparent px-3 py-2.5 focus:outline-none text-foreground placeholder-[#a3a3a0] text-sm"
                     value={input}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
-                    placeholder="Type an encrypted message..."
+                    placeholder="Type a message..."
                 />
                 <button
-                    className={`p-3 sm:p-4 rounded-xl sm:rounded-[1.5rem] transition-all duration-500 flex items-center justify-center ${input.trim()
-                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/40 transform scale-100"
-                        : "bg-[#0f1115] text-slate-700 cursor-not-allowed scale-95"
+                    className={`p-2.5 rounded-xl transition-all flex items-center justify-center ${input.trim()
+                        ? "bg-[#1d1d1b] text-white"
+                        : "bg-[#f3f3f2] text-[#cbcbcb] cursor-not-allowed"
                         }`}
                     onClick={handleSend}
                     disabled={!input.trim()}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-6 sm:h-6 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                     </svg>
                 </button>
             </div>

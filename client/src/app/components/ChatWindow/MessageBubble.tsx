@@ -18,18 +18,18 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn }) => {
     };
 
     return (
-        <div className={`flex ${isOwn ? "justify-end" : "justify-start"} group fade-in`}>
-            <div className={`flex flex-col max-w-[85%] md:max-w-[75%] ${isOwn ? "items-end" : "items-start"}`}>
-                <div className={`px-6 py-4 rounded-[1.75rem] shadow-xl text-sm leading-relaxed ${isOwn
-                    ? "bg-indigo-600 text-white rounded-tr-none shadow-indigo-900/20"
-                    : "bg-[#1a1d23] text-slate-200 rounded-tl-none border border-[#2d3139] shadow-black/20"
+        <div className={`flex ${isOwn ? "justify-end" : "justify-start"} group animate-in fade-in duration-300`}>
+            <div className={`flex flex-col max-w-[85%] md:max-w-[70%] ${isOwn ? "items-end" : "items-start"}`}>
+                <div className={`px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed ${isOwn
+                    ? "bg-[#f3f3f2] text-foreground border border-border"
+                    : "bg-surface text-foreground border border-border"
                     }`}>
-                    <div className="whitespace-pre-wrap break-words font-medium">
+                    <div className="whitespace-pre-wrap break-words">
                         {message?.content}
                     </div>
                 </div>
-                <div className="flex items-center gap-1 mt-2 px-2">
-                    <span className="text-[10px] text-slate-600 font-black uppercase tracking-widest">
+                <div className="flex items-center gap-1.5 mt-1.5 px-1">
+                    <span className="text-[10px] text-[#a3a3a0] font-medium">
                         {message.createdAt && new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                     {renderStatus()}

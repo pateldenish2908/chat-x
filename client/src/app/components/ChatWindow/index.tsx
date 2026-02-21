@@ -159,23 +159,25 @@ export default function ChatWindow({ roomId, user }: Props) {
   ), [messages, user._id]);
 
   return (
-    <div className="flex flex-col h-full bg-[#0f1115] overflow-hidden w-full transition-all duration-500">
+    <div className="flex flex-col h-full bg-background overflow-hidden w-full transition-all duration-300">
       <ChatHeader roomId={roomId} />
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 custom-scrollbar bg-transparent">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-10 space-y-6 custom-scrollbar bg-transparent">
         {isFetchingHistory ? (
-          <div className="flex h-full items-center justify-center space-x-3">
-            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:0s]" />
-            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.2s]" />
-            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.4s]" />
+          <div className="flex h-full items-center justify-center space-x-2">
+            <div className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce [animation-delay:0s]" />
+            <div className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce [animation-delay:0.2s]" />
+            <div className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce [animation-delay:0.4s]" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-slate-500 bg-[#1a1d23]/30 rounded-[2rem] sm:rounded-[3rem] border-2 border-dashed border-[#2d3139] m-4 sm:m-6">
-            <div className="text-center p-6">
-              <div className="text-4xl sm:text-5xl mb-4 sm:mb-6 grayscale opacity-50">🛰️</div>
-              <div className="text-lg sm:text-xl font-black text-slate-400 uppercase tracking-widest">Encrypted Direct Line</div>
-              <p className="text-xs sm:text-sm font-medium mt-2">Send a pulse to start communication</p>
+          <div className="flex h-full items-center justify-center m-4 sm:m-10">
+            <div className="text-center max-w-sm">
+              <div className="w-16 h-16 bg-[#f3f3f2] rounded-2xl flex items-center justify-center text-3xl mb-6 mx-auto">💬</div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Private conversation</h3>
+              <p className="text-sm text-[#6e6e6a] leading-relaxed">
+                Messages are end-to-end encrypted and synced across your devices.
+              </p>
             </div>
           </div>
         ) : (
@@ -183,13 +185,13 @@ export default function ChatWindow({ roomId, user }: Props) {
             {renderedMessages}
             <div ref={messagesEndRef} />
             {isTyping && (
-              <div className="flex items-center gap-3 text-[10px] text-indigo-400 font-black uppercase tracking-[0.2em] bg-[#1a1d23]/80 w-fit px-5 py-2.5 rounded-full border border-indigo-500/20 shadow-lg animate-pulse">
-                <div className="flex gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" />
-                  <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.2s]" />
-                  <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.4s]" />
+              <div className="flex items-center gap-2 text-[11px] text-[#6e6e6a] font-medium bg-[#f3f3f2] w-fit px-4 py-2 rounded-full border border-border">
+                <div className="flex gap-1">
+                  <span className="w-1 h-1 bg-[#a3a3a0] rounded-full animate-bounce" />
+                  <span className="w-1 h-1 bg-[#a3a3a0] rounded-full animate-bounce [animation-delay:0.2s]" />
+                  <span className="w-1 h-1 bg-[#a3a3a0] rounded-full animate-bounce [animation-delay:0.4s]" />
                 </div>
-                Receiving Input
+                Typing...
               </div>
             )}
           </div>

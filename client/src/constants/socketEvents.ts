@@ -16,4 +16,6 @@ export enum SocketEvents {
     USER_OFFLINE = 'user_offline',
     AUTHENTICATE = 'authenticate',
     CHAT_LIST_UPDATED = 'chat_list_updated',
+    NEW_CHAT_REQUEST = 'new_chat_request',
+    CHAT_REQUEST_RESPONDED = 'chat_request_responded',
 }

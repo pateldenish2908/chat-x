@@ -1,14 +1,15 @@
 const Message = require('../models/message.model');
 
-exports.sendMessage = async (chatRoomId, senderId, messageText) => {
+exports.sendMessage = async (chatRoomId, senderId, receiverId, contentText) => {
   const message = await Message.create({
+    messageId: require('uuid').v4(),
     chatRoom: chatRoomId,
     sender: senderId,
-    message: messageText,
-    isRead: false,
-    sentAt: new Date(),
+    receiver: receiverId,
+    content: contentText,
+    status: 'sent'
   });
- await message.populate('sender');
+  await message.populate('sender');
 
   return message;
 };

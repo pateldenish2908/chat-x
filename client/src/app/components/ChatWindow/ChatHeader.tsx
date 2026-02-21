@@ -7,20 +7,22 @@ interface ChatHeaderProps {
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ roomId }) => {
     return (
-        <div className="px-3 sm:px-6 py-4 sm:py-5 bg-[#0f1115] border-b border-[#2d3139] flex justify-between items-center z-10 backdrop-blur-xl bg-opacity-90 transition-all">
-            <div className="flex items-center gap-2 sm:gap-4 overflow-hidden max-w-[50%] xs:max-w-[60%] sm:max-w-none">
-                <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-indigo-500 to-indigo-600 flex items-center justify-center text-white font-black shadow-lg shadow-indigo-500/20">
+        <div className="px-4 sm:px-6 py-4 bg-background border-b border-border flex justify-between items-center z-10 sticky top-0">
+            <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-accent font-semibold text-sm">
                     #
                 </div>
-                <div className="min-w-0 flex-1">
-                    <h2 className="font-black text-slate-100 leading-tight tracking-tight uppercase text-[10px] sm:text-xs truncate">Synchronized Room</h2>
-                    <p className="text-[9px] sm:text-[10px] text-slate-500 font-bold font-mono tracking-widest truncate">{roomId}</p>
+                <div className="min-w-0">
+                    <h2 className="font-semibold text-foreground text-sm truncate">Channel</h2>
+                    <p className="text-[11px] text-[#6e6e6a] truncate">{roomId}</p>
                 </div>
             </div>
-            <div className="flex-shrink-0 flex items-center gap-2 sm:gap-4 ml-2">
+            <div className="flex items-center gap-3">
                 <Link href="/chat">
-                    <span className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl text-slate-500 hover:bg-red-500/10 hover:text-red-500 transition-all cursor-pointer border border-transparent hover:border-red-500/20">
-                        ✖
+                    <span className="p-2 rounded-lg text-[#6e6e6a] hover:bg-[#f3f3f2] transition-all cursor-pointer border border-transparent hover:border-border">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </span>
                 </Link>
             </div>

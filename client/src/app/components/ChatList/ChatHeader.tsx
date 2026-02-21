@@ -2,12 +2,12 @@ import LogoutButton from "../LogoutButton";
 
 export default function ChatHeader() {
   return (
-    <div className="flex justify-between items-center mb-0">
+    <div className="flex justify-between items-center">
       <div className="flex flex-col">
-        <h1 className="text-2xl font-black text-slate-100 tracking-tight leading-none">Connect</h1>
-        <p className="text-[10px] text-indigo-500 font-black uppercase tracking-[0.3em] mt-1">Direct Secure Line</p>
+        <h1 className="text-xl font-semibold text-foreground tracking-tight">Messages</h1>
+        <p className="text-[11px] text-[#6e6e6a] font-medium tracking-wide">Direct Secure Line</p>
       </div>
-      <div className="p-1.5 rounded-2xl bg-[#1a1d23] border border-[#2d3139] shadow-inner">
+      <div className="flex items-center gap-2">
         <LogoutButton />
       </div>
     </div>

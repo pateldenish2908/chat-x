@@ -5,23 +5,38 @@ const Message = require('../../models/message.model');
 module.exports = (io, socket) => {
     const handleSendMessage = async (data) => {
         try {
-            const { messageId, receiverId, content } = data;
+            const { messageId, roomId, content } = data;
             const senderId = socket.data.userId;
+            console.log(`📩 Received SEND_MESSAGE: room=${roomId}, sender=${senderId}, content=${content}`);
 
-            if (!receiverId || !content || !messageId) {
+            if (!roomId || !content || !messageId) {
+                console.error('❌ Incomplete message data');
                 return socket.emit('ERROR', { message: 'Incomplete message data' });
             }
 
-            // 1. Save to MongoDB
+            // 1. Get Room to find receiver
+            const ChatRoom = require('../../models/chatRoom.model');
+            const room = await ChatRoom.findById(roomId);
+            if (!room) {
+                console.error(`❌ Chat room not found: ${roomId}`);
+                return socket.emit('ERROR', { message: 'Chat room not found' });
+            }
+
+            const receiverId = room.participants.find(p => p.toString() !== senderId.toString());
+            console.log(`👤 Found receiver: ${receiverId}`);
+
+            // 2. Save to MongoDB
             const newMessage = new Message({
                 messageId,
-                chatRoom: [senderId, receiverId].sort().join('_'),
+                chatRoom: roomId,
                 sender: senderId,
                 receiver: receiverId,
                 content,
                 status: 'sent'
             });
+            console.log('💾 Saving message to DB...');
             await newMessage.save();
+            console.log('✅ Message saved');
 
             // 2. Emit single tick (sent) back to sender
             socket.emit(SocketEvents.MESSAGE_SENT, { messageId, status: 'sent' });
@@ -40,7 +55,8 @@ module.exports = (io, socket) => {
             // 4. Find receiver and deliver
             // We use room-based emission (each user joins their own room named after their userId)
             // This is more reliable than tracking socketId in Redis
-            io.to(receiverId).emit(SocketEvents.RECEIVE_MESSAGE, {
+            console.log(`📡 Emitting to room: ${receiverId.toString()}`);
+            io.to(receiverId.toString()).emit(SocketEvents.RECEIVE_MESSAGE, {
                 messageId,
                 senderId,
                 receiverId,
@@ -55,7 +71,8 @@ module.exports = (io, socket) => {
 
             // 6. Notify both users to update their chat list
             socket.emit(SocketEvents.CHAT_LIST_UPDATED);
-            io.to(receiverId).emit(SocketEvents.CHAT_LIST_UPDATED);
+            io.to(receiverId.toString()).emit(SocketEvents.CHAT_LIST_UPDATED);
+            console.log('✅ Message sequence complete');
 
             if (redisClient.isReady) {
                 await redisClient.hset(`message:${messageId}`, 'status', 'delivered');

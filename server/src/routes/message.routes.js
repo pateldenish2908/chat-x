@@ -8,16 +8,13 @@ const auth = require('../middlewares/auth.middleware');
  * @desc    Get chat history between current user and another user
  * @access  Private
  */
-router.get('/:otherUserId', auth, async (req, res) => {
+router.get('/:chatRoomId', auth, async (req, res) => {
     try {
-        const { otherUserId } = req.params;
-        const currentUserId = req.user.id;
+        const { chatRoomId } = req.params;
 
-        const chatRoom = [currentUserId, otherUserId].sort().join('_');
-
-        const messages = await Message.find({ chatRoom })
+        const messages = await Message.find({ chatRoom: chatRoomId })
             .sort({ createdAt: 1 })
-            .limit(50); // Pagination could be added later
+            .limit(100);
 
         res.json({
             status: 'success',
